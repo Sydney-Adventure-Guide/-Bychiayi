@@ -5,298 +5,168 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>公主與守護者的雪梨王國冒險</title>
     <style>
-        :root {
-            --bg-color: #fdfbf7;
-            --primary-color: #8b5a2b;
-            --accent-color: #f39c12;
-            --card-bg: #ffffff;
-            --text-color: #3e2723;
-            --nav-bg: #f9eed9;
-        }
+
         
-        body {
-            font-family: 'Helvetica Neue', Arial, 'Microsoft JhengHei', sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column; /* 整體改為上下排列：上方選單、下方內容 */
-            height: 100vh;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.6;
-            overflow: hidden; /* 隱藏整個網頁的滾動條，交給內部視窗自己滾動 */
+    /* // 1. 最上方主目錄切換 */
+        function openMainTab(evt, tabId, displayStyle) {
+            var mainTabs = document.getElementsByClassName("main-tab-content");
+            for (var i = 0; i < mainTabs.length; i++) {
+                mainTabs[i].style.display = "none";
+            }
+            var tabLinks = document.getElementsByClassName("main-tab-link");
+            for (var i = 0; i < tabLinks.length; i++) {
+                tabLinks[i].className = tabLinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabId).style.display = displayStyle;
+            evt.currentTarget.className += " active";
+            document.querySelector('.main-content').scrollTop = 0;
         }
-
-        /* --- 1. 最上方主選單 (Top Navigation) --- */
-        .top-nav-container {
-            background-color: var(--nav-bg);
-            border-bottom: 3px solid var(--primary-color);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            z-index: 20;
-            flex-shrink: 0;
+    
+        /* // 2. 左側選單切換 (通用邏輯：給定對應的 class 名稱與滾動視窗 ID) */
+        function openSubTab(evt, targetId, paneClass, linkClass, scrollBoxId) {
+            var panes = document.getElementsByClassName(paneClass);
+            for (var i = 0; i < panes.length; i++) {
+                panes[i].style.display = "none";
+            }
+            var links = document.getElementsByClassName(linkClass);
+            for (var i = 0; i < links.length; i++) {
+                links[i].className = links[i].className.replace(" active", "");
+            }
+            document.getElementById(targetId).style.display = "block";
+            evt.currentTarget.className += " active";
+            document.getElementById(scrollBoxId).scrollTop = 0;
         }
-
-        .header-title {
-            text-align: center;
-            padding: 10px 0 5px;
+    
+        // 分別控制三個不同區域的切換
+        function openExplore(evt, expId) {
+            openSubTab(evt, expId, 'explore-pane', 'explore-link', 'explore-detail-box');
         }
+        function openTrial(evt, trialId) {
+            openSubTab(evt, trialId, 'trial-pane', 'trial-link', 'trial-detail-box');
+        }
+        function openDungeon(evt, dungeonId) {
+            // 原本的 dungeon 視窗切換 (兼容你沒改到的部分)
+            openSubTab(evt, dungeonId, 'dungeon-pane', 'dungeon-link', 'Dungeons');
+            // 強制抓取第一個 .dungeon-detail (因為原本你的 HTML 結構沒加 ID)
+            var details = document.getElementById('Dungeons').getElementsByClassName('dungeon-detail');
+            if(details.length > 0) details[0].scrollTop = 0;
+        }
+    
+        /* // 3. 隱藏版 GM 模式啟動邏輯 */
+        let clickCount = 0;
+        let clickTimer;
+        const gmTrigger = document.getElementById('gm-trigger');
         
-        .header-title h1 {
-            margin: 0;
-            font-size: 1.5rem;
-            color: var(--primary-color);
-            letter-spacing: 1px;
-        }
-
-        .top-nav {
-            display: flex;
-            justify-content: center;
-            overflow-x: auto;
-            white-space: nowrap;
-        }
-
-        .top-nav button {
-            background: none;
-            border: none;
-            padding: 12px 20px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: var(--primary-color);
-            cursor: pointer;
-            transition: 0.3s;
-            border-bottom: 4px solid transparent;
-        }
-
-        .top-nav button:hover {
-            background-color: rgba(243, 156, 18, 0.1);
-        }
-
-        .top-nav button.active {
-            color: #d35400;
-            border-bottom: 4px solid var(--accent-color);
-        }
-
-        /* --- 2. 下方主要內容區 (Main Content Area) --- */
-        .main-content {
-            flex-grow: 1;
-            overflow: hidden;
-            position: relative;
-        }
-
-        /* 一般單頁內容 (故事、任務、試煉、祈願) */
-        .tab-content {
-            display: none;
-            height: 100%;
-            overflow-y: auto;
-            padding: 30px 20px;
-            box-sizing: border-box;
-            animation: fadeIn 0.4s;
-        }
-
-        .content-inner {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        /* --- 3. 專屬：雪梨王國副本 左右雙欄設計 (Dungeons Layout) --- */
-        #Dungeons {
-            padding: 0; /* 移除預設 padding，讓左右切齊邊緣 */
-        }
-        
-        .dungeon-layout {
-            display: flex;
-            height: 100%;
-            width: 100%;
-        }
-
-        /* 副本左側：地點選單 */
-        .dungeon-sidebar {
-            width: 220px;
-            min-width: 220px;
-            background-color: #ffffff;
-            border-right: 2px solid #e0e0e0;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .dungeon-sidebar button {
-            background: none;
-            border: none;
-            border-left: 4px solid transparent;
-            border-bottom: 1px solid #f0f0f0;
-            padding: 15px 15px;
-            text-align: left;
-            font-size: 1rem;
-            font-weight: bold;
-            color: var(--primary-color);
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .dungeon-sidebar button:hover {
-            background-color: #fdfbf7;
-        }
-
-        .dungeon-sidebar button.active {
-            background-color: var(--bg-color);
-            border-left: 4px solid var(--accent-color);
-            color: #d35400;
-        }
-
-        /* 副本右側：任務內容 */
-        .dungeon-detail {
-            flex-grow: 1;
-            overflow-y: auto;
-            padding: 30px;
-            background-color: var(--bg-color);
-        }
-
-        .dungeon-pane {
-            display: none;
-            animation: fadeIn 0.3s;
-            max-width: 700px;
-        }
-
-        /* --- 4. 卡片與文字通用樣式 --- */
-        .card {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            padding: 20px 25px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
-            border-left: 5px solid var(--accent-color);
-            position: relative; /* 為了讓戳章可以絕對定位在裡面 */
-            overflow: hidden; /* 防止戳章超出卡片邊界 */
-            transition: all 0.4s ease;
-        }
-
-        h2 {
-            color: var(--primary-color);
-            border-bottom: 2px dashed var(--accent-color);
-            padding-bottom: 10px;
-            font-size: 1.6rem;
-            margin-top: 0;
-        }
-
-        h3 {
-            color: var(--primary-color);
-            margin-top: 10px;
-            margin-bottom: 8px;
-            font-size: 1.3rem;
-        }
-
-        .task-req {
-            display: inline-block;
-            background-color: #fdf2e9;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.95em;
-            margin-top: 5px;
-            color: #d35400;
-            font-weight: bold;
-        }
-        /* --- 5. 蓋章完成特效 (GM 魔法) --- */
-        .card.completed {
-            background-color: #f2f2f2;
-            border-left-color: #b0bec5;
-            color: #78909c;
-        }
-        
-        .card.completed h3, .card.completed .task-req {
-            filter: grayscale(1);
-            opacity: 0.7;
-        }
-
-        .stamp {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            transform: rotate(-20deg) scale(3);
-            color: #d32f2f;
-            border: 4px dashed #d32f2f;
-            padding: 5px 15px;
-            font-size: 1.8rem;
-            font-weight: 900;
-            border-radius: 8px;
-            opacity: 0;
-            pointer-events: none;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 10;
-        }
-
-        .card.completed .stamp {
-            opacity: 0.85;
-            transform: rotate(-20deg) scale(1);
-        }
-
-        .gm-btn {
-            display: none;
-            margin-top: 15px;
-            width: 100%;
-            background-color: #27ae60;
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 6px;
-            font-weight: bold;
-            font-size: 1.1rem;
-            cursor: pointer;
-            position: relative;
-            z-index: 12;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            transition: 0.2s;
-        }
-
-        .gm-btn:active { background-color: #2ecc71; }
-        .card.completed .gm-btn { background-color: #95a5a6; }
-        body.gm-mode-active .gm-btn { display: block; }
-        
-        /* --- 手機版適應 --- */
-        @media screen and (max-width: 768px) {
-            .top-nav button { padding: 10px 15px; font-size: 1rem; }
-            .dungeon-layout { flex-direction: column; }
+        gmTrigger.addEventListener('click', () => {
+            clickCount++;
+            clearTimeout(clickTimer);
+            clickTimer = setTimeout(() => { clickCount = 0; }, 2000); 
             
-            /* 手機版時，左側副本選單變為上方橫向滑動列 */
-            .dungeon-sidebar {
-                width: 100%;
-                min-width: 100%;
-                height: auto;
-                flex-direction: row;
-                border-right: none;
-                border-bottom: 2px solid #e0e0e0;
-                box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            if (clickCount === 5) {
+                document.body.classList.toggle('gm-mode-active');
+                if (document.body.classList.contains('gm-mode-active')) {
+                    alert('🔓 GM 模式已解鎖！現在可以為公主蓋戳章了！');
+                } else {
+                    alert('🔒 GM 模式已關閉。');
+                }
+                clickCount = 0;
             }
-            .dungeon-sidebar button {
-                white-space: nowrap;
-                border-left: none;
-                border-bottom: 3px solid transparent;
-                padding: 12px 15px;
-            }
-            .dungeon-sidebar button.active {
-                border-left: none;
-                border-bottom: 3px solid var(--accent-color);
-            }
-            .dungeon-detail { padding: 20px 15px; }
-            .tab-content { padding: 20px 15px; }
+        });
+    
+        /* // 4. 自動加入戳章、記憶功能與通關打勾判斷 */
+        document.addEventListener("DOMContentLoaded", () => {
+            const cards = document.querySelectorAll('.card');
+            
+            cards.forEach((card, index) => {
+                const taskId = 'quest-card-' + index;
+                card.setAttribute('id', taskId);
+    
+                const stamp = document.createElement('div');
+                stamp.className = 'stamp';
+                stamp.innerHTML = '⭐ 達成認證';
+                card.appendChild(stamp);
+    
+                const gmBtn = document.createElement('button');
+                gmBtn.className = 'gm-btn';
+                gmBtn.innerHTML = '✅ 蓋章認證';
+                
+                gmBtn.onclick = function() {
+                    card.classList.toggle('completed');
+                    if (card.classList.contains('completed')) {
+                        gmBtn.innerHTML = '↩️ 復原戳章';
+                    } else {
+                        gmBtn.innerHTML = '✅ 蓋章認證';
+                    }
+                    saveProgress();
+                    checkAllProgress(); // 蓋完章檢查是否通關
+                };
+                card.appendChild(gmBtn);
+            });
+    
+            loadProgress();
+        });
+    
+        function saveProgress() {
+            const completedTasks = [];
+            document.querySelectorAll('.card.completed').forEach(card => {
+                completedTasks.push(card.id);
+            });
+            localStorage.setItem('sydneyQuestProgress', JSON.stringify(completedTasks));
         }
-        /* --- 7. 副本左側選單打勾特效 --- */
-        .dungeon-sidebar button.all-completed::after {
-            content: ' ✅'; /* 自動在文字後面加上勾勾 */
-            font-size: 0.9em;
-            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    
+        function loadProgress() {
+            const saved = localStorage.getItem('sydneyQuestProgress');
+            if (saved) {
+                const completedTasks = JSON.parse(saved);
+                completedTasks.forEach(id => {
+                    const card = document.getElementById(id);
+                    if (card) {
+                        card.classList.add('completed');
+                        const btn = card.querySelector('.gm-btn');
+                        if (btn) btn.innerHTML = '↩️ 復原戳章';
+                    }
+                });
+            }
+            checkAllProgress(); 
         }
-
-        @keyframes popIn {
-            0% { opacity: 0; transform: scale(0); }
-            100% { opacity: 1; transform: scale(1); }
+    
+        /* // 5. 檢查所有區域 (探索、試煉、副本) 的通關狀態並加上 ✅ */
+        function checkAllProgress() {
+            // 通用檢查函式
+            function checkLinks(linkClass) {
+                const links = document.querySelectorAll(linkClass);
+                links.forEach(link => {
+                    const onclickStr = link.getAttribute('onclick');
+                    if(!onclickStr) return;
+                    const match = onclickStr.match(/'([^']+)'/);
+                    if (match && match[1]) {
+                        const targetPane = document.getElementById(match[1]);
+                        if (targetPane) {
+                            const totalCards = targetPane.querySelectorAll('.card').length;
+                            const completedCards = targetPane.querySelectorAll('.card.completed').length;
+                            
+                            // 只要有卡片，且全部被蓋章了，就在左邊選單打勾
+                            if (totalCards > 0 && totalCards === completedCards) {
+                                link.classList.add('all-completed');
+                            } else {
+                                link.classList.remove('all-completed');
+                            }
+                        }
+                    }
+                });
+            }
+            
+            checkLinks('.dungeon-link'); // 檢查王國副本
+            checkLinks('.explore-link'); // 檢查探索任務
+            checkLinks('.trial-link');   // 檢查勇者試煉
         }
     </style>
+
+
+
+
+
+    
 </head>
 <body>
 
@@ -337,164 +207,248 @@
             </div>
         </div>
 
-        <!-- ================= 探索任務 ================= -->
+        <!-- ================= 探索任務 (左右雙欄版) ================= -->
         <div id="Explore" class="tab-content main-tab-content">
-            <div class="content-inner">
-                <h2>雪梨王國探索任務</h2>
-                <p>傳說雪梨王國裡藏著許多只有旅人才能發現的小秘密。<br>公主必須睜大眼睛，找出藏在城市、街道與生活中的魔法。</p>
-                
-                <div class="card">
-                    <h3>1. 澳洲黑色魔法醬</h3>
-                    <p>在澳洲王國中，有一種神秘食物。它外表漆黑，味道特殊。有人愛它，有人害怕它。但真正的冒險者，一定要知道它的存在。</p>
-                    <div class="task-req">-vegemite</div>
+            <div class="dungeon-layout">
+                <!-- 左側選單 -->
+                <div class="dungeon-sidebar">
+                    <button class="explore-link active" onclick="openExplore(event, 'exp-1')">1. 黑色魔法醬</button>
+                    <button class="explore-link" onclick="openExplore(event, 'exp-2')">2. 赤腳旅行者</button>
+                    <button class="explore-link" onclick="openExplore(event, 'exp-3')">3. 城市恐怖生物</button>
+                    <button class="explore-link" onclick="openExplore(event, 'exp-4')">4. 買買買鳥</button>
+                    <button class="explore-link" onclick="openExplore(event, 'exp-5')">5. 魔法機關</button>
+                    <button class="explore-link" onclick="openExplore(event, 'exp-6')">6. 天空贈禮</button>
+                    <button class="explore-link" onclick="openExplore(event, 'exp-7')">7. 秘密基地</button>
+                    <button class="explore-link" onclick="openExplore(event, 'exp-8')">8. 王國旗幟</button>
+                    <button class="explore-link" onclick="openExplore(event, 'exp-9')">9. 勇者武器</button>
+                    <button class="explore-link" onclick="openExplore(event, 'exp-10')">10. 璀璨寶石</button>
+                    <button class="explore-link" onclick="openExplore(event, 'exp-11')">11. 神秘禮物</button>
+                    <button class="explore-link" onclick="openExplore(event, 'exp-12')">12. 幸運星</button>
+                    <button class="explore-link" onclick="openExplore(event, 'exp-13')">13. 幸福見證者</button>
+                    <button class="explore-link" onclick="openExplore(event, 'exp-14')">14. 昏睡藥水</button>
+                    <button class="explore-link" onclick="openExplore(event, 'exp-15')">15. 守護精靈</button>
                 </div>
-                <div class="card">
-                    <h3>2. 赤腳旅行者</h3>
-                    <p>雪梨王國有一群自由的旅人。<br>他們相信：「腳感受到土地，才能真正感受世界。」<br>找到一位赤腳勇者吧！</p>
-                    <div class="task-req">-路上不穿鞋的人</div>
-                </div>
-                <div class="card">
-                    <h3>3. 城市恐怖生物</h3>
-                    <p>牠不是普通的鳥。牠是雪梨城市傳說中的居民。<br>雖然大家叫它垃圾鳥，但它其實是：「王國中最可怕的生物。」</p>
-                    <img src="https://raw.githubusercontent.com/hottp2988/sydney-quest-images/main/bird.png" alt="垃圾鳥通緝令" style="width: 100%; height: auto; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.15);">
-                    <div class="task-req">-垃圾鳥</div>
-                </div>
-                <div class="card">
-                    <h3>4. 天空買買買鳥</h3>
-                    <p>有多久沒有聽到催促買東西的聲音了<br>牠們是雪梨天空中的小霸王。找到牠！</p>
-                    <div class="task-req">-買買買鳥</div>
-                </div>
-                <div class="card">
-                    <h3>5. 道路魔法機關</h3>
-                    <p>每位冒險者都必須學會使用：「道路控制魔法。」<br>找到它，按下它，開啟下一段旅程。</p>
-                    <div class="task-req">-過馬路的按鈕</div>
-                </div>
-                <div class="card">
-                    <h3>6. 天空贈禮</h3>
-                    <p>每天太陽下山前，雪梨天空會偷偷準備一份禮物。公主必須找到：「最值得收藏的夕陽。」</p>
-                    <div class="task-req">-澳洲最美夕陽</div>
-                </div>
-                <div class="card">
-                    <h3>7. 精靈秘密基地</h3>
-                    <p>魔法精靈在人類世界生活時，也需要一個秘密基地。找到它！</p>
-                    <div class="task-req">-Amy工作的店</div>
-                </div>
-                <div class="card">
-                    <h3>8. 古老王國旗幟</h3>
-                    <p>探索雪梨王國歷史，找到代表這片土地的重要象徵。</p>
-                    <div class="task-req">-原住民國旗</div>
-                </div>
-                <div class="card">
-                    <h3>9. 澳洲勇者武器</h3>
-                    <p>傳說中丟出去的勇氣，終究會回到自己身邊</p>
-                    <div class="task-req">-迴力鏢</div>
-                </div>
-                <div class="card">
-                    <h3>10. 璀璨寶石</h3>
-                    <p>澳洲王國最珍貴的寶石之一，找到屬於自己的幸運寶石</p>
-                    <div class="task-req">-歐泊</div>
-                </div>
-                <div class="card">
-                    <h3>11. 袋鼠王國的神秘禮物</h3>
-                    <p>在雪梨王國的土地上，流傳著一個神秘傳說。<br>袋鼠一族留下了一份只有勇敢旅人才能發現的寶物。</p>
-                    <div class="task-req">-袋鼠蛋蛋</div>
-                </div>
-                <div class="card">
-                    <h3>12. 夜空中的幸運星</h3>
-                    <p>當太陽離開雪梨王國後，天空會打開另一張藏寶圖。<br>其中有一顆星星，正在等待被公主發現。<br>閉上眼睛許下一個小願望，也許星星會偷偷記住它。</p>
-                    <div class="task-req">-夜晚最亮的星星</div>
-                </div>
-                <div class="card">
-                    <h3>13. 幸福見證者</h3>
-                    <p>雪梨王國裡，藏著許多走過長久旅程的人。<br>尋找一對看起來幸福的人，因為真正的魔法不是年輕時的心動，而是多年後依然選擇陪伴。</p>
-                    <div class="task-req">-找到一對甜蜜的情侶/夫妻</div>
-                </div>
-                <div class="card">
-                    <h3>14. 昏睡藥水</h3>
-                    <p>傳說中有一瓶來自澳洲王國的療癒藥水。<br>它能幫助疲憊的旅人恢復力量。<br>公主必須找到：「讓冒險者睡個好覺的秘密配方。」</p>
-                    <div class="task-req">-白人中藥sleep well</div>
-                </div>
-                <div class="card">
-                    <h3>15 森林守護精靈</h3>
-                    <p>在澳洲森林深處，住著一群溫柔的守護精靈。<br>牠們平常躲起來休息，只有幸運的冒險者才能遇見。<br>找到無尾熊，代表公主獲得森林祝福。</p>
-                    <div class="task-req">-任何無尾熊🐨</div>
+
+                <!-- 右側任務內容 -->
+                <div class="dungeon-detail" id="explore-detail-box">
+                    <div id="exp-1" class="explore-pane" style="display: block;">
+                        <h2>1. 澳洲黑色魔法醬</h2>
+                        <div class="card">
+                            <p>在澳洲王國中，有一種神秘食物。它外表漆黑，味道特殊。有人愛它，有人害怕它。但真正的冒險者，一定要知道它的存在。</p>
+                            <div class="task-req">-vegemite</div>
+                        </div>
+                    </div>
+                    <div id="exp-2" class="explore-pane">
+                        <h2>2. 赤腳旅行者</h2>
+                        <div class="card">
+                            <p>雪梨王國有一群自由的旅人。<br>他們相信：「腳感受到土地，才能真正感受世界。」<br>找到一位赤腳勇者吧！</p>
+                            <div class="task-req">-路上不穿鞋的人</div>
+                        </div>
+                    </div>
+                    <div id="exp-3" class="explore-pane">
+                        <h2>3. 城市恐怖生物</h2>
+                        <div class="card">
+                            <p>牠不是普通的鳥。牠是雪梨城市傳說中的居民。<br>雖然大家叫它垃圾鳥，但它其實是：「王國中最可怕的生物。」</p>
+                            <!-- ⚠️ 你的垃圾鳥圖片保留在這裡！ -->
+                            <img src="https://raw.githubusercontent.com/hottp2988/sydney-quest-images/main/bird.png" alt="垃圾鳥通緝令" style="width: 100%; height: auto; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.15);">
+                            <div class="task-req">-垃圾鳥</div>
+                        </div>
+                    </div>
+                    <div id="exp-4" class="explore-pane">
+                        <h2>4. 天空買買買鳥</h2>
+                        <div class="card">
+                            <p>有多久沒有聽到催促買東西的聲音了<br>牠們是雪梨天空中的小霸王。找到牠！</p>
+                            <div class="task-req">-買買買鳥</div>
+                        </div>
+                    </div>
+                    <div id="exp-5" class="explore-pane">
+                        <h2>5. 道路魔法機關</h2>
+                        <div class="card">
+                            <p>每位冒險者都必須學會使用：「道路控制魔法。」<br>找到它，按下它，開啟下一段旅程。</p>
+                            <div class="task-req">-過馬路的按鈕</div>
+                        </div>
+                    </div>
+                    <div id="exp-6" class="explore-pane">
+                        <h2>6. 天空贈禮</h2>
+                        <div class="card">
+                            <p>每天太陽下山前，雪梨天空會偷偷準備一份禮物。公主必須找到：「最值得收藏的夕陽。」</p>
+                            <div class="task-req">-澳洲最美夕陽</div>
+                        </div>
+                    </div>
+                    <div id="exp-7" class="explore-pane">
+                        <h2>7. 精靈秘密基地</h2>
+                        <div class="card">
+                            <p>魔法精靈在人類世界生活時，也需要一個秘密基地。找到它！</p>
+                            <div class="task-req">-Amy工作的店</div>
+                        </div>
+                    </div>
+                    <div id="exp-8" class="explore-pane">
+                        <h2>8. 古老王國旗幟</h2>
+                        <div class="card">
+                            <p>探索雪梨王國歷史，找到代表這片土地的重要象徵。</p>
+                            <div class="task-req">-原住民國旗</div>
+                        </div>
+                    </div>
+                    <div id="exp-9" class="explore-pane">
+                        <h2>9. 澳洲勇者武器</h2>
+                        <div class="card">
+                            <p>傳說中丟出去的勇氣，終究會回到自己身邊</p>
+                            <div class="task-req">-迴力鏢</div>
+                        </div>
+                    </div>
+                    <div id="exp-10" class="explore-pane">
+                        <h2>10. 璀璨寶石</h2>
+                        <div class="card">
+                            <p>澳洲王國最珍貴的寶石之一，找到屬於自己的幸運寶石</p>
+                            <div class="task-req">-歐泊</div>
+                        </div>
+                    </div>
+                    <div id="exp-11" class="explore-pane">
+                        <h2>11. 袋鼠王國的神秘禮物</h2>
+                        <div class="card">
+                            <p>在雪梨王國的土地上，流傳著一個神秘傳說。<br>袋鼠一族留下了一份只有勇敢旅人才能發現的寶物。</p>
+                            <div class="task-req">-袋鼠蛋蛋</div>
+                        </div>
+                    </div>
+                    <div id="exp-12" class="explore-pane">
+                        <h2>12. 夜空中的幸運星</h2>
+                        <div class="card">
+                            <p>當太陽離開雪梨王國後，天空會打開另一張藏寶圖。<br>其中有一顆星星，正在等待被公主發現。<br>閉上眼睛許下一個小願望，也許星星會偷偷記住它。</p>
+                            <div class="task-req">-夜晚最亮的星星</div>
+                        </div>
+                    </div>
+                    <div id="exp-13" class="explore-pane">
+                        <h2>13. 幸福見證者</h2>
+                        <div class="card">
+                            <p>雪梨王國裡，藏著許多走過長久旅程的人。<br>尋找一對看起來幸福的人，因為真正的魔法不是年輕時的心動，而是多年後依然選擇陪伴。</p>
+                            <div class="task-req">-找到一對甜蜜的情侶/夫妻</div>
+                        </div>
+                    </div>
+                    <div id="exp-14" class="explore-pane">
+                        <h2>14. 昏睡藥水</h2>
+                        <div class="card">
+                            <p>傳說中有一瓶來自澳洲王國的療癒藥水。<br>它能幫助疲憊的旅人恢復力量。<br>公主必須找到：「讓冒險者睡個好覺的秘密配方。」</p>
+                            <div class="task-req">-白人中藥sleep well</div>
+                        </div>
+                    </div>
+                    <div id="exp-15" class="explore-pane">
+                        <h2>15. 森林守護精靈</h2>
+                        <div class="card">
+                            <p>在澳洲森林深處，住著一群溫柔的守護精靈。<br>牠們平常躲起來休息，只有幸運的冒險者才能遇見。<br>找到無尾熊，代表公主獲得森林祝福。</p>
+                            <div class="task-req">-任何無尾熊🐨</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <!-- ================= 勇者試煉 ================= -->
+<!-- ================= 勇者試煉 (左右雙欄版) ================= -->
         <div id="Trials" class="tab-content main-tab-content">
-            <div class="content-inner">
-                <h2>勇者試煉</h2>
-                <p>親愛的 Jasmine 均公主：<br>
-                找到隱藏在雪梨王國裡的寶藏，只代表冒險的開始。<br>
-                真正的冒險者，不只需要敏銳的眼睛，還需要勇敢的心。<br>
-                在這些試煉中，公主需要放下害羞、突破害怕，與身邊的守護者一起完成挑戰。<br>
-                每一次大笑、每一次嘗試、每一次留下的照片，都會化成珍貴的勇氣星星 ⭐</p>
+            <div class="dungeon-layout">
+                <!-- 左側選單 -->
+                <div class="dungeon-sidebar">
+                    <button class="trial-link active" onclick="openTrial(event, 'tri-1')">1. 村民交流</button>
+                    <button class="trial-link" onclick="openTrial(event, 'tri-2')">2. 旋轉魔法</button>
+                    <button class="trial-link" onclick="openTrial(event, 'tri-3')">3. 旅人祝福</button>
+                    <button class="trial-link" onclick="openTrial(event, 'tri-4')">4. 啟動儀式</button>
+                    <button class="trial-link" onclick="openTrial(event, 'tri-5')">5. 甜蜜咒語</button>
+                    <button class="trial-link" onclick="openTrial(event, 'tri-6')">6. 推薦預言</button>
+                    <button class="trial-link" onclick="openTrial(event, 'tri-7')">7. 飲品魔法</button>
+                    <button class="trial-link" onclick="openTrial(event, 'tri-8')">8. 尋找伙伴</button>
+                    <button class="trial-link" onclick="openTrial(event, 'tri-9')">9. 優雅封印</button>
+                    <button class="trial-link" onclick="openTrial(event, 'tri-10')">10. 外交任務</button>
+                    <button class="trial-link" onclick="openTrial(event, 'tri-11')">11. 召喚魔法</button>
+                    <button class="trial-link" onclick="openTrial(event, 'tri-12')">12. 食物鑑定</button>
+                </div>
 
-                <div class="card">
-                    <h3>1. 澳洲村民交流術</h3>
-                    <p>在雪梨王國中，居民之間有一個特別的友好暗號。<br>當勇者完成交易後，必須用最自然的方式向村民表示感謝：「Cheers mate!」<br>成功使用澳洲暗號，代表公主正式獲得雪梨居民認證。</p>
-                    <div class="task-req">* 結帳完跟店員說 cheers mate 🌟🌟</div>
-                </div>
-                <div class="card">
-                    <h3>2. 夕陽旋轉魔法</h3>
-                    <p>每天太陽準備離開雪梨王國時，天空都會偷偷施展一場金色魔法。<br>傳說只有快樂的人，才能被夕陽記錄下來。<br>公主必須在夕陽之下，留下屬於自己的魔法影像。</p>
-                    <div class="task-req">* 在夕陽下錄影轉圈圈 🌟🌟🌟</div>
-                </div>
-                <div class="card">
-                    <h3>3. 陌生旅人的祝福</h3>
-                    <p>旅途中，有些珍貴畫面無法靠自己完成。<br>真正勇敢的冒險者，必須相信陌生旅人的善意。<br>找到一位王國居民，請他幫忙留下三位守護者與公主的冒險紀錄。</p>
-                    <div class="task-req">* 請路人幫我們四個拍照 🌟🌟🌟</div>
-                </div>
-                <div class="card">
-                    <h3>4. 道路魔法啟動儀式</h3>
-                    <p>雪梨王國中藏著許多城市魔法機關。<br>其中最重要的一個，就是控制道路通行的神秘按鈕。<br>只有學會使用它的冒險者，才能順利前往下一個目的地。</p>
-                    <div class="task-req">* 按過馬路的按鈕 🌟🌟</div>
-                </div>
-                <div class="card">
-                    <h3>5. 冰雪甜蜜咒語</h3>
-                    <p>在雪梨王國中，住著一位守護甜蜜的冰雪精靈。<br>傳說只有唱出真正幸福的旋律，才能獲得他的祝福。<br>公主必須施展甜蜜魔法，讓身邊的人感受到快樂。</p>
-                    <div class="task-req">* 對雪王唱「你愛我我愛你蜜雪冰城甜蜜蜜」（可以在他耳邊小聲唱） 🌟🌟🌟</div>
-                </div>
-                <div class="card">
-                    <h3>6. 商店精靈的推薦預言</h3>
-                    <p>每一家商店裡，都藏著一位熟悉寶物的精靈。<br>他們知道哪些東西值得被發現。<br>勇敢的冒險者，不能只尋找自己熟悉的寶物，必須向居民詢問未知的驚喜。</p>
-                    <div class="task-req">* 問店員推薦什麼 🌟🌟</div>
-                </div>
-                <div class="card">
-                    <h3>7. 澳洲飲品魔法</h3>
-                    <p>不小心誤入原始部落，族長十分不認可我們闖入的行動不肯放我們離開雪梨<br>若想離開，就必須品嚐當地流傳的魔法飲品Chai Latte，代表公主認可了部落。</p>
-                    <div class="task-req">* 喝一杯 chai latte 🌟🌟</div>
-                </div>
-                <div class="card">
-                    <h3>8. 命運伙伴尋找術</h3>
-                    <p>救命救命！公主的守護者被封印在娃娃裡面了<br>現在以靈魂型態在公主身邊的守護者急需要公主的幫助<br>公主必須找到最符合每位守護者的代表。</p>
-                    <div class="task-req">* 在 Jellycat 找到最像守護者們的娃娃並且對娃娃說 復活吧我的愛人 🌟🌟</div>
-                </div>
-                <div class="card">
-                    <h3>9. 公主優雅封印術</h3>
-                    <p>身為王國公主，Jasmine 均必須維持優雅形象。<br>但是其他守護者將受到搞怪魔法影響，必須挑戰做出最奇怪的表情。<br>看看誰能讓大家笑出聲！</p>
-                    <div class="task-req">* 宜均不辦鬼臉，其他人辦 🌟🌟🌟</div>
-                </div>
-                <div class="card">
-                    <h3>10. 異國語言外交任務</h3>
-                    <p>不同王國有不同的語言。身為公主，學習如何外交也是必要的修養<br>即使面對陌生語言，也能勇敢表達自己的需求。<br>今天，公主將成為隊伍外交官。</p>
-                    <div class="task-req">* 一個人全程用英文點所有人的餐 🌟🌟🌟</div>
-                </div>
-                <div class="card">
-                    <h3>11. 澳洲召喚魔法</h3>
-                    <p>糟糕！我們被發現不是當地人了<br>使用澳洲王國的一個神秘咒語。<br>當勇者喊出：「Aussie Aussie Aussie!」<br>所有伙伴必須回應：「Oi Oi Oi!」<br>成功融入當地人吧</p>
-                    <div class="task-req">* 🍑喊：Aussie Aussie Aussie！ 所有人接：Oi Oi Oi！ 🌟🌟🌟</div>
-                </div>
-                <div class="card">
-                    <h3>12. 神秘食物鑑定師</h3>
-                    <p>雪梨王國的超市中，藏著許多未知的魔法食物。<br>有些外表奇特，有些味道令人驚訝。<br>真正的冒險者，必須找到最不可思議的寶物。</p>
-                    <div class="task-req">* 比賽找出超市最奇怪的零食 🌟🌟</div>
+                <!-- 右側任務內容 -->
+                <div class="dungeon-detail" id="trial-detail-box">
+                    <div id="tri-1" class="trial-pane" style="display: block;">
+                        <h2>1. 澳洲村民交流術</h2>
+                        <div class="card">
+                            <p>在雪梨王國中，居民之間有一個特別的友好暗號。<br>當勇者完成交易後，必須用最自然的方式向村民表示感謝：「Cheers mate!」<br>成功使用澳洲暗號，代表公主正式獲得雪梨居民認證。</p>
+                            <div class="task-req">* 結帳完跟店員說 cheers mate 🌟🌟</div>
+                        </div>
+                    </div>
+                    <div id="tri-2" class="trial-pane">
+                        <h2>2. 夕陽旋轉魔法</h2>
+                        <div class="card">
+                            <p>每天太陽準備離開雪梨王國時，天空都會偷偷施展一場金色魔法。<br>傳說只有快樂的人，才能被夕陽記錄下來。<br>公主必須在夕陽之下，留下屬於自己的魔法影像。</p>
+                            <div class="task-req">* 在夕陽下錄影轉圈圈 🌟🌟🌟</div>
+                        </div>
+                    </div>
+                    <div id="tri-3" class="trial-pane">
+                        <h2>3. 陌生旅人的祝福</h2>
+                        <div class="card">
+                            <p>旅途中，有些珍貴畫面無法靠自己完成。<br>真正勇敢的冒險者，必須相信陌生旅人的善意。<br>找到一位王國居民，請他幫忙留下三位守護者與公主的冒險紀錄。</p>
+                            <div class="task-req">* 請路人幫我們四個拍照 🌟🌟🌟</div>
+                        </div>
+                    </div>
+                    <div id="tri-4" class="trial-pane">
+                        <h2>4. 道路魔法啟動儀式</h2>
+                        <div class="card">
+                            <p>雪梨王國中藏著許多城市魔法機關。<br>其中最重要的一個，就是控制道路通行的神秘按鈕。<br>只有學會使用它的冒險者，才能順利前往下一個目的地。</p>
+                            <div class="task-req">* 按過馬路的按鈕 🌟🌟</div>
+                        </div>
+                    </div>
+                    <div id="tri-5" class="trial-pane">
+                        <h2>5. 冰雪甜蜜咒語</h2>
+                        <div class="card">
+                            <p>在雪梨王國中，住著一位守護甜蜜的冰雪精靈。<br>傳說只有唱出真正幸福的旋律，才能獲得他的祝福。<br>公主必須施展甜蜜魔法，讓身邊的人感受到快樂。</p>
+                            <div class="task-req">* 對雪王唱「你愛我我愛你蜜雪冰城甜蜜蜜」（可以在他耳邊小聲唱） 🌟🌟🌟</div>
+                        </div>
+                    </div>
+                    <div id="tri-6" class="trial-pane">
+                        <h2>6. 商店精靈的推薦預言</h2>
+                        <div class="card">
+                            <p>每一家商店裡，都藏著一位熟悉寶物的精靈。<br>他們知道哪些東西值得被發現。<br>勇敢的冒險者，不能只尋找自己熟悉的寶物，必須向居民詢問未知的驚喜。</p>
+                            <div class="task-req">* 問店員推薦什麼 🌟🌟</div>
+                        </div>
+                    </div>
+                    <div id="tri-7" class="trial-pane">
+                        <h2>7. 澳洲飲品魔法</h2>
+                        <div class="card">
+                            <p>不小心誤入原始部落，族長十分不認可我們闖入的行動不肯放我們離開雪梨<br>若想離開，就必須品嚐當地流傳的魔法飲品Chai Latte，代表公主認可了部落。</p>
+                            <div class="task-req">* 喝一杯 chai latte 🌟🌟</div>
+                        </div>
+                    </div>
+                    <div id="tri-8" class="trial-pane">
+                        <h2>8. 命運伙伴尋找術</h2>
+                        <div class="card">
+                            <p>救命救命！公主的守護者被封印在娃娃裡面了<br>現在以靈魂型態在公主身邊的守護者急需要公主的幫助<br>公主必須找到最符合每位守護者的代表。</p>
+                            <div class="task-req">* 在 Jellycat 找到最像守護者們的娃娃並且對娃娃說 復活吧我的愛人 🌟🌟</div>
+                        </div>
+                    </div>
+                    <div id="tri-9" class="trial-pane">
+                        <h2>9. 公主優雅封印術</h2>
+                        <div class="card">
+                            <p>身為王國公主，Jasmine 均必須維持優雅形象。<br>但是其他守護者將受到搞怪魔法影響，必須挑戰做出最奇怪的表情。<br>看看誰能讓大家笑出聲！</p>
+                            <div class="task-req">* 宜均不辦鬼臉，其他人辦 🌟🌟🌟</div>
+                        </div>
+                    </div>
+                    <div id="tri-10" class="trial-pane">
+                        <h2>10. 異國語言外交任務</h2>
+                        <div class="card">
+                            <p>不同王國有不同的語言。身為公主，學習如何外交也是必要的修養<br>即使面對陌生語言，也能勇敢表達自己的需求。<br>今天，公主將成為隊伍外交官。</p>
+                            <div class="task-req">* 一個人全程用英文點所有人的餐 🌟🌟🌟</div>
+                        </div>
+                    </div>
+                    <div id="tri-11" class="trial-pane">
+                        <h2>11. 澳洲召喚魔法</h2>
+                        <div class="card">
+                            <p>糟糕！我們被發現不是當地人了<br>使用澳洲王國的一個神秘咒語。<br>當勇者喊出：「Aussie Aussie Aussie!」<br>所有伙伴必須回應：「Oi Oi Oi!」<br>成功融入當地人吧</p>
+                            <div class="task-req">* 🍑喊：Aussie Aussie Aussie！ 所有人接：Oi Oi Oi！ 🌟🌟🌟</div>
+                        </div>
+                    </div>
+                    <div id="tri-12" class="trial-pane">
+                        <h2>12. 神秘食物鑑定師</h2>
+                        <div class="card">
+                            <p>雪梨王國的超市中，藏著許多未知的魔法食物。<br>有些外表奇特，有些味道令人驚訝。<br>真正的冒險者，必須找到最不可思議的寶物。</p>
+                            <div class="task-req">* 比賽找出超市最奇怪的零食 🌟🌟</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-
         <!-- ================= 王國副本 (左右分割版) ================= -->
         <div id="Dungeons" class="tab-content main-tab-content">
             <div class="dungeon-layout">
