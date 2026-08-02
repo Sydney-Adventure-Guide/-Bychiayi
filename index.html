@@ -171,6 +171,9 @@
             margin-bottom: 20px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.04);
             border-left: 5px solid var(--accent-color);
+            position: relative; /* 為了讓戳章可以絕對定位在裡面 */
+            overflow: hidden; /* 防止戳章超出卡片邊界 */
+            transition: all 0.4s ease;
         }
 
         h2 {
@@ -198,7 +201,62 @@
             color: #d35400;
             font-weight: bold;
         }
+        /* --- 5. 蓋章完成特效 (GM 魔法) --- */
+        .card.completed {
+            background-color: #f2f2f2;
+            border-left-color: #b0bec5;
+            color: #78909c;
+        }
+        
+        .card.completed h3, .card.completed .task-req {
+            filter: grayscale(1);
+            opacity: 0.7;
+        }
 
+        .stamp {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            transform: rotate(-20deg) scale(3);
+            color: #d32f2f;
+            border: 4px dashed #d32f2f;
+            padding: 5px 15px;
+            font-size: 1.8rem;
+            font-weight: 900;
+            border-radius: 8px;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 10;
+        }
+
+        .card.completed .stamp {
+            opacity: 0.85;
+            transform: rotate(-20deg) scale(1);
+        }
+
+        .gm-btn {
+            display: none;
+            margin-top: 15px;
+            width: 100%;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            position: relative;
+            z-index: 12;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: 0.2s;
+        }
+
+        .gm-btn:active { background-color: #2ecc71; }
+        .card.completed .gm-btn { background-color: #95a5a6; }
+        body.gm-mode-active .gm-btn { display: block; }
+        
         /* --- 手機版適應 --- */
         @media screen and (max-width: 768px) {
             .top-nav button { padding: 10px 15px; font-size: 1rem; }
@@ -233,8 +291,8 @@
 
     <!-- 1. 最上方固定主選單 -->
     <div class="top-nav-container">
-        <div class="header-title">
-            <h1>✨ 雪梨王國冒險手冊</h1>
+        <div class="header-title" style="user-select: none; -webkit-user-select: none;">
+            <h1 id="gm-trigger" style="cursor: pointer; display: inline-block;">✨ 雪梨王國冒險手冊</h1>
         </div>
         <div class="top-nav">
             <button class="main-tab-link active" onclick="openMainTab(event, 'Story', 'block')">📖 故事主線</button>
@@ -665,6 +723,89 @@
         
         // 切換任務時，讓右側視窗回到最上方
         document.querySelector('.dungeon-detail').scrollTop = 0;
+    }
+    // --- 隱藏版 GM 模式啟動邏輯 ---
+    let clickCount = 0;
+    let clickTimer;
+    const gmTrigger = document.getElementById('gm-trigger');
+    
+    gmTrigger.addEventListener('click', () => {
+        clickCount++;
+        clearTimeout(clickTimer);
+        // 如果 2 秒內沒點完 5 下就歸零
+        clickTimer = setTimeout(() => { clickCount = 0; }, 2000); 
+        
+        if (clickCount === 5) {
+            document.body.classList.toggle('gm-mode-active');
+            if (document.body.classList.contains('gm-mode-active')) {
+                alert('🔓 GM 模式已解鎖！現在可以為公主蓋戳章了！');
+            } else {
+                alert('🔒 GM 模式已關閉。');
+            }
+            clickCount = 0;
+        }
+    });
+
+    // --- 自動為所有卡片加入戳章與 GM 按鈕，並負責記憶功能 ---
+    document.addEventListener("DOMContentLoaded", () => {
+        const cards = document.querySelectorAll('.card');
+        
+        cards.forEach((card, index) => {
+            // 給每張卡片一個唯一的 ID 方便記錄
+            const taskId = 'quest-card-' + index;
+            card.setAttribute('id', taskId);
+
+            // 放入紅色的「⭐ 達成認證」戳章
+            const stamp = document.createElement('div');
+            stamp.className = 'stamp';
+            stamp.innerHTML = '⭐ 達成認證';
+            card.appendChild(stamp);
+
+            // 放入隱藏的 GM 專屬按鈕
+            const gmBtn = document.createElement('button');
+            gmBtn.className = 'gm-btn';
+            gmBtn.innerHTML = '✅ 蓋章認證';
+            
+            // 點擊按鈕時的反應
+            gmBtn.onclick = function() {
+                card.classList.toggle('completed');
+                if (card.classList.contains('completed')) {
+                    gmBtn.innerHTML = '↩️ 復原戳章';
+                } else {
+                    gmBtn.innerHTML = '✅ 蓋章認證';
+                }
+                saveProgress();
+            };
+            card.appendChild(gmBtn);
+        });
+
+        // 初始化讀取進度
+        loadProgress();
+    });
+
+    // 儲存進度到手機瀏覽器的記憶體中
+    function saveProgress() {
+        const completedTasks = [];
+        document.querySelectorAll('.card.completed').forEach(card => {
+            completedTasks.push(card.id);
+        });
+        localStorage.setItem('sydneyQuestProgress', JSON.stringify(completedTasks));
+    }
+
+    // 打開網頁時自動讀取進度
+    function loadProgress() {
+        const saved = localStorage.getItem('sydneyQuestProgress');
+        if (saved) {
+            const completedTasks = JSON.parse(saved);
+            completedTasks.forEach(id => {
+                const card = document.getElementById(id);
+                if (card) {
+                    card.classList.add('completed');
+                    const btn = card.querySelector('.gm-btn');
+                    if (btn) btn.innerHTML = '↩️ 復原戳章';
+                }
+            });
+        }
     }
     </script>
 
