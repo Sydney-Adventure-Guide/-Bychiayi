@@ -681,132 +681,141 @@
     </div>
 
     <script>
-    // 控制最上方主目錄切換
-    function openMainTab(evt, tabId, displayStyle) {
-        // 隱藏所有主內容
-        var mainTabs = document.getElementsByClassName("main-tab-content");
-        for (var i = 0; i < mainTabs.length; i++) {
-            mainTabs[i].style.display = "none";
-        }
-        
-        // 移除主按鈕的 active 狀態
-        var tabLinks = document.getElementsByClassName("main-tab-link");
-        for (var i = 0; i < tabLinks.length; i++) {
-            tabLinks[i].className = tabLinks[i].className.replace(" active", "");
-        }
-        
-        // 顯示被選中的內容 (副本使用 flex，其他使用 block)
-        document.getElementById(tabId).style.display = displayStyle;
-        evt.currentTarget.className += " active";
-        
-        // 自動把畫面捲到最上面
-        document.querySelector('.main-content').scrollTop = 0;
-    }
-
-    // 控制副本內部的左側選單切換
-    function openDungeon(evt, dungeonId) {
-        // 隱藏所有副本右側內容
-        var panes = document.getElementsByClassName("dungeon-pane");
-        for (var i = 0; i < panes.length; i++) {
-            panes[i].style.display = "none";
-        }
-        
-        // 移除左側按鈕的 active 狀態
-        var dLinks = document.getElementsByClassName("dungeon-link");
-        for (var i = 0; i < dLinks.length; i++) {
-            dLinks[i].className = dLinks[i].className.replace(" active", "");
-        }
-        
-        // 顯示對應的地點任務
-        document.getElementById(dungeonId).style.display = "block";
-        evt.currentTarget.className += " active";
-        
-        // 切換任務時，讓右側視窗回到最上方
-        document.querySelector('.dungeon-detail').scrollTop = 0;
-    }
-    // --- 隱藏版 GM 模式啟動邏輯 ---
-    let clickCount = 0;
-    let clickTimer;
-    const gmTrigger = document.getElementById('gm-trigger');
-    
-    gmTrigger.addEventListener('click', () => {
-        clickCount++;
-        clearTimeout(clickTimer);
-        // 如果 2 秒內沒點完 5 下就歸零
-        clickTimer = setTimeout(() => { clickCount = 0; }, 2000); 
-        
-        if (clickCount === 5) {
-            document.body.classList.toggle('gm-mode-active');
-            if (document.body.classList.contains('gm-mode-active')) {
-                alert('🔓 GM 模式已解鎖！現在可以為公主蓋戳章了！');
-            } else {
-                alert('🔒 GM 模式已關閉。');
+    // 1. 介面切換功能
+        function openMainTab(evt, tabId, displayStyle) {
+            var mainTabs = document.getElementsByClassName("main-tab-content");
+            for (var i = 0; i < mainTabs.length; i++) {
+                mainTabs[i].style.display = "none";
             }
-            clickCount = 0;
+            var tabLinks = document.getElementsByClassName("main-tab-link");
+            for (var i = 0; i < tabLinks.length; i++) {
+                tabLinks[i].className = tabLinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabId).style.display = displayStyle;
+            evt.currentTarget.className += " active";
+            document.querySelector('.main-content').scrollTop = 0;
         }
-    });
-
-    // --- 自動為所有卡片加入戳章與 GM 按鈕，並負責記憶功能 ---
-    document.addEventListener("DOMContentLoaded", () => {
-        const cards = document.querySelectorAll('.card');
+    
+        function openDungeon(evt, dungeonId) {
+            var panes = document.getElementsByClassName("dungeon-pane");
+            for (var i = 0; i < panes.length; i++) {
+                panes[i].style.display = "none";
+            }
+            var dLinks = document.getElementsByClassName("dungeon-link");
+            for (var i = 0; i < dLinks.length; i++) {
+                dLinks[i].className = dLinks[i].className.replace(" active", "");
+            }
+            document.getElementById(dungeonId).style.display = "block";
+            evt.currentTarget.className += " active";
+            document.querySelector('.dungeon-detail').scrollTop = 0;
+        }
+    
+        // 2. 隱藏版 GM 模式啟動邏輯
+        let clickCount = 0;
+        let clickTimer;
+        const gmTrigger = document.getElementById('gm-trigger');
         
-        cards.forEach((card, index) => {
-            // 給每張卡片一個唯一的 ID 方便記錄
-            const taskId = 'quest-card-' + index;
-            card.setAttribute('id', taskId);
-
-            // 放入紅色的「⭐ 達成認證」戳章
-            const stamp = document.createElement('div');
-            stamp.className = 'stamp';
-            stamp.innerHTML = '⭐ 達成認證';
-            card.appendChild(stamp);
-
-            // 放入隱藏的 GM 專屬按鈕
-            const gmBtn = document.createElement('button');
-            gmBtn.className = 'gm-btn';
-            gmBtn.innerHTML = '✅ 蓋章認證';
+        gmTrigger.addEventListener('click', () => {
+            clickCount++;
+            clearTimeout(clickTimer);
+            // 如果 2 秒內沒點完 5 下就歸零
+            clickTimer = setTimeout(() => { clickCount = 0; }, 2000); 
             
-            // 點擊按鈕時的反應
-            gmBtn.onclick = function() {
-                card.classList.toggle('completed');
-                if (card.classList.contains('completed')) {
-                    gmBtn.innerHTML = '↩️ 復原戳章';
+            if (clickCount === 5) {
+                document.body.classList.toggle('gm-mode-active');
+                if (document.body.classList.contains('gm-mode-active')) {
+                    alert('🔓 GM 模式已解鎖！現在可以為公主蓋戳章了！');
                 } else {
-                    gmBtn.innerHTML = '✅ 蓋章認證';
+                    alert('🔒 GM 模式已關閉。');
                 }
-                saveProgress();
-            };
-            card.appendChild(gmBtn);
+                clickCount = 0;
+            }
         });
-
-        // 初始化讀取進度
-        loadProgress();
-    });
-
-    // 儲存進度到手機瀏覽器的記憶體中
-    function saveProgress() {
-        const completedTasks = [];
-        document.querySelectorAll('.card.completed').forEach(card => {
-            completedTasks.push(card.id);
+    
+        // 3. 自動為所有卡片加入戳章與 GM 按鈕，並負責記憶功能
+        document.addEventListener("DOMContentLoaded", () => {
+            const cards = document.querySelectorAll('.card');
+            
+            cards.forEach((card, index) => {
+                const taskId = 'quest-card-' + index;
+                card.setAttribute('id', taskId);
+    
+                const stamp = document.createElement('div');
+                stamp.className = 'stamp';
+                stamp.innerHTML = '⭐ 達成認證';
+                card.appendChild(stamp);
+    
+                const gmBtn = document.createElement('button');
+                gmBtn.className = 'gm-btn';
+                gmBtn.innerHTML = '✅ 蓋章認證';
+                
+                gmBtn.onclick = function() {
+                    card.classList.toggle('completed');
+                    if (card.classList.contains('completed')) {
+                        gmBtn.innerHTML = '↩️ 復原戳章';
+                    } else {
+                        gmBtn.innerHTML = '✅ 蓋章認證';
+                    }
+                    saveProgress();
+                    checkDungeonProgress(); // 每次點擊後檢查是否通關該地點
+                };
+                card.appendChild(gmBtn);
+            });
+    
+            loadProgress();
         });
-        localStorage.setItem('sydneyQuestProgress', JSON.stringify(completedTasks));
-    }
-
-    // 打開網頁時自動讀取進度
-    function loadProgress() {
-        const saved = localStorage.getItem('sydneyQuestProgress');
-        if (saved) {
-            const completedTasks = JSON.parse(saved);
-            completedTasks.forEach(id => {
-                const card = document.getElementById(id);
-                if (card) {
-                    card.classList.add('completed');
-                    const btn = card.querySelector('.gm-btn');
-                    if (btn) btn.innerHTML = '↩️ 復原戳章';
+    
+        // 儲存進度
+        function saveProgress() {
+            const completedTasks = [];
+            document.querySelectorAll('.card.completed').forEach(card => {
+                completedTasks.push(card.id);
+            });
+            localStorage.setItem('sydneyQuestProgress', JSON.stringify(completedTasks));
+        }
+    
+        // 讀取進度
+        function loadProgress() {
+            const saved = localStorage.getItem('sydneyQuestProgress');
+            if (saved) {
+                const completedTasks = JSON.parse(saved);
+                completedTasks.forEach(id => {
+                    const card = document.getElementById(id);
+                    if (card) {
+                        card.classList.add('completed');
+                        const btn = card.querySelector('.gm-btn');
+                        if (btn) btn.innerHTML = '↩️ 復原戳章';
+                    }
+                });
+            }
+            checkDungeonProgress(); // 讀取完畢後檢查是否要顯示勾勾
+        }
+    
+        // 4. 新增：檢查每個地點的完成度，並在左側選單打勾
+        function checkDungeonProgress() {
+            const dLinks = document.querySelectorAll('.dungeon-link');
+            
+            dLinks.forEach(link => {
+                // 從 onclick="openDungeon(event, 'sub-xxx')" 中抓出 'sub-xxx'
+                const onclickStr = link.getAttribute('onclick');
+                const match = onclickStr.match(/'([^']+)'/);
+                
+                if (match && match[1]) {
+                    const targetPane = document.getElementById(match[1]);
+                    if (targetPane) {
+                        const totalCards = targetPane.querySelectorAll('.card').length;
+                        const completedCards = targetPane.querySelectorAll('.card.completed').length;
+                        
+                        // 如果這個地點有卡片，而且「完成數量」等於「總數量」，就打勾！
+                        if (totalCards > 0 && totalCards === completedCards) {
+                            link.classList.add('all-completed');
+                        } else {
+                            link.classList.remove('all-completed');
+                        }
+                    }
                 }
             });
         }
-    }
     </script>
 
 </body>
