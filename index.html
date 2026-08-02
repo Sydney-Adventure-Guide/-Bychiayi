@@ -285,6 +285,17 @@
             .dungeon-detail { padding: 20px 15px; }
             .tab-content { padding: 20px 15px; }
         }
+        /* --- 7. 副本左側選單打勾特效 --- */
+        .dungeon-sidebar button.all-completed::after {
+            content: ' ✅'; /* 自動在文字後面加上勾勾 */
+            font-size: 0.9em;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0); }
+            100% { opacity: 1; transform: scale(1); }
+        }
     </style>
 </head>
 <body>
