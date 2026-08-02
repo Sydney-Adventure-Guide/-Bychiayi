@@ -283,25 +283,45 @@
             0% { opacity: 0; transform: scale(0); }
             100% { opacity: 1; transform: scale(1); }
         }
-        /* --- 6. 手機版適應 --- */
+        /* --- 6. 手機版自動適應 (修復跑版與防擁擠優化) --- */
         @media screen and (max-width: 768px) {
             .top-nav button { padding: 10px 15px; font-size: 1rem; }
             .dungeon-layout { flex-direction: column; }
+            
+            /* 次級選單：橫向滑動，只佔一行高度 */
             .dungeon-sidebar {
                 width: 100%; min-width: 100%; height: auto;
                 flex-direction: row; border-right: none;
                 border-bottom: 2px solid #e0e0e0;
                 box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+                overflow-x: auto; 
+                flex-wrap: nowrap;
             }
+            
             .dungeon-sidebar button {
                 white-space: nowrap; border-left: none;
                 border-bottom: 3px solid transparent; padding: 12px 15px;
+                flex-shrink: 0; 
             }
+            
             .dungeon-sidebar button.active {
                 border-left: none; border-bottom: 3px solid var(--accent-color);
             }
-            .dungeon-detail, .tab-content { padding: 20px 15px; }
-            .stamp { top: 10px; right: 10px; font-size: 1.4rem; padding: 3px 10px;}
+            
+            /* 讓內容區塊貼齊邊緣 */
+            .dungeon-detail, .tab-content { padding: 15px 10px; }
+            
+            /* 👇 新增：對話框專屬防擁擠優化 👇 */
+            .card {
+                padding: 15px 15px; /* 縮小內部留白，把空間還給文字和圖片 */
+                border-radius: 10px; /* 圓角稍微縮小，視覺更俐落 */
+            }
+            
+            h2 { font-size: 1.4rem; padding-bottom: 8px; } /* 標題微調大小 */
+            h3 { font-size: 1.2rem; }
+            
+            /* 縮小手機版印章尺寸，絕對不擋文字 */
+            .stamp { top: 10px; right: 10px; font-size: 1.2rem; padding: 3px 8px; border-width: 3px; }
         }
     </style>
 
