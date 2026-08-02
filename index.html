@@ -11,573 +11,527 @@
             --accent-color: #f39c12;
             --card-bg: #ffffff;
             --text-color: #3e2723;
+            --sidebar-bg: #f9eed9;
         }
+        
         body {
             font-family: 'Helvetica Neue', Arial, 'Microsoft JhengHei', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
             margin: 0;
             padding: 0;
+            display: flex; /* 使用彈性排版讓左右並排 */
+            height: 100vh; /* 高度佔滿全螢幕 */
+            background-color: var(--bg-color);
+            color: var(--text-color);
             line-height: 1.6;
+            overflow: hidden;
         }
-        header {
-            background-color: var(--primary-color);
-            color: white;
-            text-align: center;
-            padding: 20px 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        header h1 {
-            margin: 0;
-            font-size: 1.5rem;
-            letter-spacing: 1px;
-        }
-        /* 選單樣式 */
-        .tab-menu {
+
+        /* --- 左側選單 (Sidebar) --- */
+        .sidebar {
+            width: 250px;
+            min-width: 250px;
+            background-color: var(--sidebar-bg);
+            border-right: 3px solid var(--primary-color);
             display: flex;
-            overflow-x: auto;
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            flex-direction: column;
+            overflow-y: auto; /* 選單過長可獨立滾動 */
+            box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+            z-index: 10;
         }
-        .tab-menu button {
-            background-color: inherit;
-            float: left;
+
+        .sidebar-header {
+            padding: 30px 20px 20px;
+            text-align: center;
+        }
+
+        .sidebar-header h1 {
+            margin: 0;
+            font-size: 1.4rem;
+            color: var(--primary-color);
+            line-height: 1.4;
+        }
+
+        .sidebar button {
+            background: none;
             border: none;
-            outline: none;
-            cursor: pointer;
-            padding: 14px 16px;
-            transition: 0.3s;
-            font-size: 16px;
+            width: 100%;
+            text-align: left;
+            padding: 18px 25px;
+            font-size: 1.1rem;
             font-weight: bold;
             color: var(--primary-color);
-            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 5px solid transparent;
+        }
+
+        .sidebar button:hover {
+            background-color: rgba(243, 156, 18, 0.15);
+        }
+
+        /* 被選中時的按鈕樣式 */
+        .sidebar button.active {
+            background-color: var(--bg-color);
+            border-left: 5px solid var(--accent-color);
+            color: #d35400;
+        }
+
+        /* --- 右側內容視窗 (Main Content) --- */
+        .main-content {
             flex-grow: 1;
+            padding: 40px;
+            overflow-y: auto; /* 內容過長可獨立滾動 */
+            background-color: var(--bg-color);
+            position: relative;
         }
-        .tab-menu button:hover {
-            background-color: #f1f1f1;
-        }
-        .tab-menu button.active {
-            background-color: var(--accent-color);
-            color: white;
-        }
-        /* 內容區塊樣式 */
+
         .tab-content {
             display: none;
-            padding: 20px;
-            animation: fadeEffect 0.5s;
+            animation: fadeIn 0.4s ease-in-out;
             max-width: 800px;
             margin: 0 auto;
         }
-        @keyframes fadeEffect {
-            from {opacity: 0;}
-            to {opacity: 1;}
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
+
+        /* 卡片與文字樣式 */
         .card {
             background-color: var(--card-bg);
-            border-radius: 10px;
-            padding: 15px 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-radius: 12px;
+            padding: 20px 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
             border-left: 5px solid var(--accent-color);
         }
+
         h2 {
             color: var(--primary-color);
             border-bottom: 2px dashed var(--accent-color);
-            padding-bottom: 5px;
+            padding-bottom: 10px;
+            font-size: 1.8rem;
+            margin-top: 0;
         }
+
         h3 {
             color: var(--primary-color);
-            margin-top: 20px;
-            margin-bottom: 5px;
+            margin-top: 10px;
+            margin-bottom: 8px;
+            font-size: 1.2rem;
         }
-        .highlight {
-            color: var(--accent-color);
-            font-weight: bold;
-        }
+
         .task-req {
             display: inline-block;
             background-color: #fdf2e9;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 0.9em;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.95em;
             margin-top: 5px;
             color: #d35400;
             font-weight: bold;
         }
-        /* 折疊選單 (Accordion) 樣式 */
-        .accordion {
-            background-color: var(--card-bg);
-            color: var(--primary-color);
-            cursor: pointer;
-            padding: 15px 20px;
-            width: 100%;
-            border: none;
-            text-align: left;
-            outline: none;
-            font-size: 1.1rem;
-            font-weight: bold;
-            transition: 0.4s;
-            border-left: 5px solid var(--accent-color);
-            margin-bottom: 5px;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .accordion.active, .accordion:hover {
-            background-color: #fce8cc; /* 滑過或展開時的背景色 */
-        }
-        .accordion:after {
-            content: '\002B'; /* 加號圖示 */
-            color: var(--accent-color);
-            font-weight: bold;
-            float: right;
-            margin-left: 5px;
-        }
-        .accordion.active:after {
-            content: "\2212"; /* 減號圖示 */
-        }
-        .panel {
-            padding: 0 20px;
-            background-color: white;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.2s ease-out;
-            border-radius: 0 0 5px 5px;
-            margin-bottom: 15px;
-            border-left: 5px solid #e0e0e0;
-        }
-        /* --- 新增：滑順跳轉與傳送門按鈕樣式 --- */
-        html {
-            scroll-behavior: smooth; /* 讓跳轉有滑順的滾動動畫，而不是生硬地切換 */
-        }
-        
-        .jump-menu {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 25px;
-        }
-        
-        .jump-btn {
-            background-color: var(--card-bg);
-            color: var(--primary-color);
-            text-decoration: none;
-            padding: 12px 10px;
-            border-radius: 8px;
-            font-weight: bold;
-            border: 2px solid var(--accent-color);
-            flex: 1 1 calc(50% - 10px); /* 讓按鈕兩兩並排，適合手機畫面 */
-            text-align: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            transition: 0.2s;
-        }
-        
-        .jump-btn:active, .jump-btn:hover {
-            background-color: var(--accent-color);
-            color: white;
-        }
 
-        /* 避免跳轉時，卡片標題被最上方的固定選單列擋住 */
-        .card {
-            scroll-margin-top: 70px; 
+        /* --- 手機版自動適應 (RWD) --- */
+        @media screen and (max-width: 768px) {
+            body {
+                flex-direction: column; /* 改為上下排版 */
+            }
+            .sidebar {
+                width: 100%;
+                min-width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 3px solid var(--primary-color);
+                flex-direction: row;
+                overflow-x: auto; /* 允許橫向滑動 */
+                white-space: nowrap;
+                padding: 0;
+            }
+            .sidebar-header {
+                display: none; /* 手機版隱藏大標題以節省空間 */
+            }
+            .sidebar button {
+                padding: 15px 20px;
+                border-left: none;
+                border-bottom: 4px solid transparent;
+                text-align: center;
+                flex-shrink: 0;
+            }
+            .sidebar button.active {
+                border-left: none;
+                border-bottom: 4px solid var(--accent-color);
+            }
+            .main-content {
+                padding: 20px 15px;
+            }
         }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>✨ 雪梨王國冒險手冊 ✨</h1>
-</header>
-
-<div class="tab-menu">
-    <button class="tablinks active" onclick="openTab(event, 'Story')">故事主線</button>
-    <button class="tablinks" onclick="openTab(event, 'Explore')">探索任務</button>
-    <button class="tablinks" onclick="openTab(event, 'Trials')">勇者試煉</button>
-    <button class="tablinks" onclick="openTab(event, 'Dungeons')">王國副本</button>
-    <button class="tablinks" onclick="openTab(event, 'Ceremony')">祈願儀式</button>
-</div>
-
-<!-- 故事主線 -->
-<div id="Story" class="tab-content" style="display: block;">
-    <h2>故事主線</h2>
-    <div class="card">
-        <p>很久很久以前，有一位來自遠方王國的公主——Jasmine均 。</p>
-        <p>為了尋找世界上最珍貴的寶藏，她來到了遙遠的雪梨王國。</p>
-        <p>傳說雪梨王國藏著「幸福星星」，每一顆星星都代表一次笑聲、一段回憶、一個值得收藏的瞬間。</p>
-        <p>但是，只有勇敢、可愛又充滿好奇心的公主，才能完成所有冒險。</p>
-        <p>於是，三位守護者踏上旅程：<br>
-        接下來請稱呼我們<br>
-        🧚 魔法精靈 Amy<br>
-        🛡️ 皇家騎士 Danny<br>
-        🤴 王子殿下 Mark</p>
-        <p>他們將陪伴宜昂Jasmine 均公主探索雪梨王國，完成任務，收集星星，找到屬於自己的幸福寶藏。</p>
-    </div>
-</div>
-
-<!-- 雪梨王國探索任務 -->
-<div id="Explore" class="tab-content">
-    <h2>雪梨王國探索任務</h2>
-    <p>傳說雪梨王國裡藏著許多只有旅人才能發現的小秘密。<br>公主必須睜大眼睛，找出藏在城市、街道與生活中的魔法。</p>
-    
-    <div class="card">
-        <h3>1. 澳洲黑色魔法醬</h3>
-        <p>在澳洲王國中，有一種神秘食物。它外表漆黑，味道特殊。有人愛它，有人害怕它。但真正的冒險者，一定要知道它的存在。</p>
-        <div class="task-req">-vegemite</div>
-    </div>
-    <div class="card">
-        <h3>2. 赤腳旅行者</h3>
-        <p>雪梨王國有一群自由的旅人。<br>他們相信：「腳感受到土地，才能真正感受世界。」<br>找到一位赤腳勇者吧！</p>
-        <div class="task-req">-路上不穿鞋的人</div>
-    </div>
-    <div class="card">
-        <h3>3. 城市恐怖生物</h3>
-        <p>牠不是普通的鳥。牠是雪梨城市傳說中的居民。<br>雖然大家叫它垃圾鳥，但它其實是：「王國中最可怕的生物。」</p>
-        <div class="task-req">-垃圾鳥</div>
-    </div>
-    <div class="card">
-        <h3>4. 天空買買買鳥</h3>
-        <p>有多久沒有聽到催促買東西的聲音了<br>牠們是雪梨天空中的小霸王。找到牠！</p>
-        <div class="task-req">-買買買鳥</div>
-    </div>
-    <div class="card">
-        <h3>5. 道路魔法機關</h3>
-        <p>每位冒險者都必須學會使用：「道路控制魔法。」<br>找到它，按下它，開啟下一段旅程。</p>
-        <div class="task-req">-過馬路的按鈕</div>
-    </div>
-    <div class="card">
-        <h3>6. 天空贈禮</h3>
-        <p>每天太陽下山前，雪梨天空會偷偷準備一份禮物。公主必須找到：「最值得收藏的夕陽。」</p>
-        <div class="task-req">-澳洲最美夕陽</div>
-    </div>
-    <div class="card">
-        <h3>7. 精靈秘密基地</h3>
-        <p>魔法精靈在人類世界生活時，也需要一個秘密基地。找到它！</p>
-        <div class="task-req">-Amy工作的店</div>
-    </div>
-    <div class="card">
-        <h3>8. 古老王國旗幟</h3>
-        <p>探索雪梨王國歷史，找到代表這片土地的重要象徵。</p>
-        <div class="task-req">-原住民國旗</div>
-    </div>
-    <div class="card">
-        <h3>9. 澳洲勇者武器</h3>
-        <p>傳說中丟出去的勇氣，終究會回到自己身邊</p>
-        <div class="task-req">-迴力鏢</div>
-    </div>
-    <div class="card">
-        <h3>10. 璀璨寶石</h3>
-        <p>澳洲王國最珍貴的寶石之一，找到屬於自己的幸運寶石</p>
-        <div class="task-req">-歐泊</div>
-    </div>
-    <div class="card">
-        <h3>11. 袋鼠王國的神秘禮物</h3>
-        <p>在雪梨王國的土地上，流傳著一個神秘傳說。<br>袋鼠一族留下了一份只有勇敢旅人才能發現的寶物。</p>
-        <div class="task-req">-袋鼠蛋蛋</div>
-    </div>
-    <div class="card">
-        <h3>12. 夜空中的幸運星</h3>
-        <p>當太陽離開雪梨王國後，天空會打開另一張藏寶圖。<br>其中有一顆星星，正在等待被公主發現。<br>閉上眼睛許下一個小願望，也許星星會偷偷記住它。</p>
-        <div class="task-req">-夜晚最亮的星星</div>
-    </div>
-    <div class="card">
-        <h3>13. 幸福見證者</h3>
-        <p>雪梨王國裡，藏著許多走過長久旅程的人。<br>尋找一對看起來幸福的人，因為真正的魔法不是年輕時的心動，而是多年後依然選擇陪伴。</p>
-        <div class="task-req">-找到一對甜蜜的情侶/夫妻</div>
-    </div>
-    <div class="card">
-        <h3>14. 昏睡藥水</h3>
-        <p>傳說中有一瓶來自澳洲王國的療癒藥水。<br>它能幫助疲憊的旅人恢復力量。<br>公主必須找到：「讓冒險者睡個好覺的秘密配方。」</p>
-        <div class="task-req">-白人中藥sleep well</div>
-    </div>
-    <div class="card">
-        <h3>15 森林守護精靈</h3>
-        <p>在澳洲森林深處，住著一群溫柔的守護精靈。<br>牠們平常躲起來休息，只有幸運的冒險者才能遇見。<br>找到無尾熊，代表公主獲得森林祝福。</p>
-        <div class="task-req">-任何無尾熊🐨</div>
-    </div>
-</div>
-
-<!-- 勇者試煉 -->
-<div id="Trials" class="tab-content">
-    <h2>勇者試煉</h2>
-    <p>親愛的 Jasmine 均公主：<br>
-    找到隱藏在雪梨王國裡的寶藏，只代表冒險的開始。<br>
-    真正的冒險者，不只需要敏銳的眼睛，還需要勇敢的心。<br>
-    在這些試煉中，公主需要放下害羞、突破害怕，與身邊的守護者一起完成挑戰。<br>
-    每一次大笑、每一次嘗試、每一次留下的照片，都會化成珍貴的勇氣星星 ⭐</p>
-
-    <div class="card">
-        <h3>1. 澳洲村民交流術</h3>
-        <p>在雪梨王國中，居民之間有一個特別的友好暗號。<br>當勇者完成交易後，必須用最自然的方式向村民表示感謝：「Cheers mate!」<br>成功使用澳洲暗號，代表公主正式獲得雪梨居民認證。</p>
-        <div class="task-req">* 結帳完跟店員說 cheers mate 🌟🌟</div>
-    </div>
-    <div class="card">
-        <h3>2. 夕陽旋轉魔法</h3>
-        <p>每天太陽準備離開雪梨王國時，天空都會偷偷施展一場金色魔法。<br>傳說只有快樂的人，才能被夕陽記錄下來。<br>公主必須在夕陽之下，留下屬於自己的魔法影像。</p>
-        <div class="task-req">* 在夕陽下錄影轉圈圈 🌟🌟🌟</div>
-    </div>
-    <div class="card">
-        <h3>3. 陌生旅人的祝福</h3>
-        <p>旅途中，有些珍貴畫面無法靠自己完成。<br>真正勇敢的冒險者，必須相信陌生旅人的善意。<br>找到一位王國居民，請他幫忙留下三位守護者與公主的冒險紀錄。</p>
-        <div class="task-req">* 請路人幫我們四個拍照 🌟🌟🌟</div>
-    </div>
-    <div class="card">
-        <h3>4. 道路魔法啟動儀式</h3>
-        <p>雪梨王國中藏著許多城市魔法機關。<br>其中最重要的一個，就是控制道路通行的神秘按鈕。<br>只有學會使用它的冒險者，才能順利前往下一個目的地。</p>
-        <div class="task-req">* 按過馬路的按鈕 🌟🌟</div>
-    </div>
-    <div class="card">
-        <h3>5. 冰雪甜蜜咒語</h3>
-        <p>在雪梨王國中，住著一位守護甜蜜的冰雪精靈。<br>傳說只有唱出真正幸福的旋律，才能獲得他的祝福。<br>公主必須施展甜蜜魔法，讓身邊的人感受到快樂。</p>
-        <div class="task-req">* 對雪王唱「你愛我我愛你蜜雪冰城甜蜜蜜」（可以在他耳邊小聲唱） 🌟🌟🌟</div>
-    </div>
-    <div class="card">
-        <h3>6. 商店精靈的推薦預言</h3>
-        <p>每一家商店裡，都藏著一位熟悉寶物的精靈。<br>他們知道哪些東西值得被發現。<br>勇敢的冒險者，不能只尋找自己熟悉的寶物，必須向居民詢問未知的驚喜。</p>
-        <div class="task-req">* 問店員推薦什麼 🌟🌟</div>
-    </div>
-    <div class="card">
-        <h3>7. 澳洲飲品魔法</h3>
-        <p>不小心誤入原始部落，族長十分不認可我們闖入的行動不肯放我們離開雪梨<br>若想離開，就必須品嚐當地流傳的魔法飲品Chai Latte，代表公主認可了部落。</p>
-        <div class="task-req">* 喝一杯 chai latte 🌟🌟</div>
-    </div>
-    <div class="card">
-        <h3>8. 命運伙伴尋找術</h3>
-        <p>救命救命！公主的守護者被封印在娃娃裡面了<br>現在以靈魂型態在公主身邊的守護者急需要公主的幫助<br>公主必須找到最符合每位守護者的代表。</p>
-        <div class="task-req">* 在 Jellycat 找到最像守護者們的娃娃並且對娃娃說 復活吧我的愛人 🌟🌟</div>
-    </div>
-    <div class="card">
-        <h3>9. 公主優雅封印術</h3>
-        <p>身為王國公主，Jasmine 均必須維持優雅形象。<br>但是其他守護者將受到搞怪魔法影響，必須挑戰做出最奇怪的表情。<br>看看誰能讓大家笑出聲！</p>
-        <div class="task-req">* 宜均不辦鬼臉，其他人辦 🌟🌟🌟</div>
-    </div>
-    <div class="card">
-        <h3>10. 異國語言外交任務</h3>
-        <p>不同王國有不同的語言。身為公主，學習如何外交也是必要的修養<br>即使面對陌生語言，也能勇敢表達自己的需求。<br>今天，公主將成為隊伍外交官。</p>
-        <div class="task-req">* 一個人全程用英文點所有人的餐 🌟🌟🌟</div>
-    </div>
-    <div class="card">
-        <h3>11. 澳洲召喚魔法</h3>
-        <p>糟糕！我們被發現不是當地人了<br>使用澳洲王國的一個神秘咒語。<br>當勇者喊出：「Aussie Aussie Aussie!」<br>所有伙伴必須回應：「Oi Oi Oi!」<br>成功融入當地人吧</p>
-        <div class="task-req">* 🍑喊：Aussie Aussie Aussie！ 所有人接：Oi Oi Oi！ 🌟🌟🌟</div>
-    </div>
-    <div class="card">
-        <h3>12. 神秘食物鑑定師</h3>
-        <p>雪梨王國的超市中，藏著許多未知的魔法食物。<br>有些外表奇特，有些味道令人驚訝。<br>真正的冒險者，必須找到最不可思議的寶物。</p>
-        <div class="task-req">* 比賽找出超市最奇怪的零食 🌟🌟</div>
-    </div>
-</div>
-
-<!-- 雪梨王國副本 (按鈕跳轉版) -->
-<div id="Dungeons" class="tab-content">
-    <h2>雪梨王國副本</h2>
-    <p>Jasmine 均公主正式獲得了冒險資格。<br>
-    點擊下方的「傳送門按鈕」，立刻前往指定的副本關卡吧！</p>
-
-    <!-- 傳送門按鈕區 (目錄) -->
-    <div class="jump-menu">
-        <a href="#dungeon-newtown" class="jump-btn">🎨 Newtown 藝術精靈村</a>
-        <a href="#dungeon-usyd" class="jump-btn">🏰 Sydney University 魔法學院</a>
-        <a href="#dungeon-observatory" class="jump-btn">🌃 天文台 星空許願塔</a>
-        <a href="#dungeon-unsw" class="jump-btn">🌈 UNSW 精靈彩虹學院</a>
-        <a href="#dungeon-opera" class="jump-btn">🏛 歌劇院 海港水晶宮</a>
-        <a href="#dungeon-bluemountain" class="jump-btn">🏔 藍山 雲端天空神殿</a>
-        <a href="#dungeon-zoo" class="jump-btn">🦘 澳洲動物園 魔法動物森林</a>
-        <a href="#dungeon-kingdom_of_sea" class="jump-btn">🌊 Bondi Beach 海洋王國</a>
-        <a href="#dungeon-Chinatown" class="jump-btn">🏮 Chinatown 東方商人市集</a>
-        <a href="#dungeon-The_Rocks" class="jump-btn">🪨 The Rocks 古老寶藏街</a>
-        <a href="#dungeon-Queen_Victoria_Building" class="jump-btn">🏰 Queen Victoria Building 水晶宮殿</a>
+    <!-- 左側導覽選單 -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h1>✨ 雪梨王國<br>冒險手冊</h1>
+        </div>
+        <button class="tablinks active" onclick="openContent(event, 'Story')">📖 故事主線</button>
+        <button class="tablinks" onclick="openContent(event, 'Explore')">🔍 探索任務</button>
+        <button class="tablinks" onclick="openContent(event, 'Trials')">⚔️ 勇者試煉</button>
+        <button class="tablinks" onclick="openContent(event, 'Dungeons')">🏰 王國副本</button>
+        <button class="tablinks" onclick="openContent(event, 'Ceremony')">🌟 祈願儀式</button>
     </div>
 
-    <!-- ⬇️ 下方是具體的關卡內容 ⬇️ -->
+    <!-- 右側內容視窗 -->
+    <div class="main-content">
+        
+        <!-- 故事主線 -->
+        <div id="Story" class="tab-content" style="display: block;">
+            <h2>故事主線</h2>
+            <div class="card">
+                <p>很久很久以前，有一位來自遠方王國的公主——Jasmine均 。</p>
+                <p>為了尋找世界上最珍貴的寶藏，她來到了遙遠的雪梨王國。</p>
+                <p>傳說雪梨王國藏著「幸福星星」，每一顆星星都代表一次笑聲、一段回憶、一個值得收藏的瞬間。</p>
+                <p>但是，只有勇敢、可愛又充滿好奇心的公主，才能完成所有冒險。</p>
+                <p>於是，三位守護者踏上旅程：<br>
+                接下來請稱呼我們<br>
+                🧚 魔法精靈 Amy<br>
+                🛡️ 皇家騎士 Danny<br>
+                🤴 王子殿下 Mark</p>
+                <p>他們將陪伴宜昂Jasmine 均公主探索雪梨王國，完成任務，收集星星，找到屬於自己的幸福寶藏。</p>
+            </div>
+        </div>
 
-    <div id="dungeon-newtown" class="card">
-        <h3>🎨 Newtown 藝術精靈村</h3>
-        <p>在雪梨王國的西方，住著一群熱愛創作的藝術精靈。<br>他們相信，世界上沒有完全一樣的作品，就像每個人都有屬於自己的故事。</p>
-        <p><strong>1. 精靈打卡任務</strong><br>藝術精靈們喜歡把自己的作品，藏在村莊的每個角落。找到指定地點，留下公主到訪的證明。<br>
-        <span class="task-req">在指定地點拍照 🌟🌟</span></p>
-        <p><strong>2. 命定的寶物</strong><br>只要它讓公主心動，那就是屬於妳的寶藏。<br>
-        <span class="task-req">買到一樣心儀的紀念品 🌟🌟</span></p>
+        <!-- 探索任務 -->
+        <div id="Explore" class="tab-content">
+            <h2>雪梨王國探索任務</h2>
+            <p>傳說雪梨王國裡藏著許多只有旅人才能發現的小秘密。<br>公主必須睜大眼睛，找出藏在城市、街道與生活中的魔法。</p>
+            
+            <div class="card">
+                <h3>1. 澳洲黑色魔法醬</h3>
+                <p>在澳洲王國中，有一種神秘食物。它外表漆黑，味道特殊。有人愛它，有人害怕它。但真正的冒險者，一定要知道它的存在。</p>
+                <div class="task-req">-vegemite</div>
+            </div>
+            <div class="card">
+                <h3>2. 赤腳旅行者</h3>
+                <p>雪梨王國有一群自由的旅人。<br>他們相信：「腳感受到土地，才能真正感受世界。」<br>找到一位赤腳勇者吧！</p>
+                <div class="task-req">-路上不穿鞋的人</div>
+            </div>
+            <div class="card">
+                <h3>3. 城市恐怖生物</h3>
+                <p>牠不是普通的鳥。牠是雪梨城市傳說中的居民。<br>雖然大家叫它垃圾鳥，但它其實是：「王國中最可怕的生物。」</p>
+                <div class="task-req">-垃圾鳥</div>
+            </div>
+            <div class="card">
+                <h3>4. 天空買買買鳥</h3>
+                <p>有多久沒有聽到催促買東西的聲音了<br>牠們是雪梨天空中的小霸王。找到牠！</p>
+                <div class="task-req">-買買買鳥</div>
+            </div>
+            <div class="card">
+                <h3>5. 道路魔法機關</h3>
+                <p>每位冒險者都必須學會使用：「道路控制魔法。」<br>找到它，按下它，開啟下一段旅程。</p>
+                <div class="task-req">-過馬路的按鈕</div>
+            </div>
+            <div class="card">
+                <h3>6. 天空贈禮</h3>
+                <p>每天太陽下山前，雪梨天空會偷偷準備一份禮物。公主必須找到：「最值得收藏的夕陽。」</p>
+                <div class="task-req">-澳洲最美夕陽</div>
+            </div>
+            <div class="card">
+                <h3>7. 精靈秘密基地</h3>
+                <p>魔法精靈在人類世界生活時，也需要一個秘密基地。找到它！</p>
+                <div class="task-req">-Amy工作的店</div>
+            </div>
+            <div class="card">
+                <h3>8. 古老王國旗幟</h3>
+                <p>探索雪梨王國歷史，找到代表這片土地的重要象徵。</p>
+                <div class="task-req">-原住民國旗</div>
+            </div>
+            <div class="card">
+                <h3>9. 澳洲勇者武器</h3>
+                <p>傳說中丟出去的勇氣，終究會回到自己身邊</p>
+                <div class="task-req">-迴力鏢</div>
+            </div>
+            <div class="card">
+                <h3>10. 璀璨寶石</h3>
+                <p>澳洲王國最珍貴的寶石之一，找到屬於自己的幸運寶石</p>
+                <div class="task-req">-歐泊</div>
+            </div>
+            <div class="card">
+                <h3>11. 袋鼠王國的神秘禮物</h3>
+                <p>在雪梨王國的土地上，流傳著一個神秘傳說。<br>袋鼠一族留下了一份只有勇敢旅人才能發現的寶物。</p>
+                <div class="task-req">-袋鼠蛋蛋</div>
+            </div>
+            <div class="card">
+                <h3>12. 夜空中的幸運星</h3>
+                <p>當太陽離開雪梨王國後，天空會打開另一張藏寶圖。<br>其中有一顆星星，正在等待被公主發現。<br>閉上眼睛許下一個小願望，也許星星會偷偷記住它。</p>
+                <div class="task-req">-夜晚最亮的星星</div>
+            </div>
+            <div class="card">
+                <h3>13. 幸福見證者</h3>
+                <p>雪梨王國裡，藏著許多走過長久旅程的人。<br>尋找一對看起來幸福的人，因為真正的魔法不是年輕時的心動，而是多年後依然選擇陪伴。</p>
+                <div class="task-req">-找到一對甜蜜的情侶/夫妻</div>
+            </div>
+            <div class="card">
+                <h3>14. 昏睡藥水</h3>
+                <p>傳說中有一瓶來自澳洲王國的療癒藥水。<br>它能幫助疲憊的旅人恢復力量。<br>公主必須找到：「讓冒險者睡個好覺的秘密配方。」</p>
+                <div class="task-req">-白人中藥sleep well</div>
+            </div>
+            <div class="card">
+                <h3>15 森林守護精靈</h3>
+                <p>在澳洲森林深處，住著一群溫柔的守護精靈。<br>牠們平常躲起來休息，只有幸運的冒險者才能遇見。<br>找到無尾熊，代表公主獲得森林祝福。</p>
+                <div class="task-req">-任何無尾熊🐨</div>
+            </div>
+        </div>
+
+        <!-- 勇者試煉 -->
+        <div id="Trials" class="tab-content">
+            <h2>勇者試煉</h2>
+            <p>親愛的 Jasmine 均公主：<br>
+            找到隱藏在雪梨王國裡的寶藏，只代表冒險的開始。<br>
+            真正的冒險者，不只需要敏銳的眼睛，還需要勇敢的心。<br>
+            在這些試煉中，公主需要放下害羞、突破害怕，與身邊的守護者一起完成挑戰。<br>
+            每一次大笑、每一次嘗試、每一次留下的照片，都會化成珍貴的勇氣星星 ⭐</p>
+
+            <div class="card">
+                <h3>1. 澳洲村民交流術</h3>
+                <p>在雪梨王國中，居民之間有一個特別的友好暗號。<br>當勇者完成交易後，必須用最自然的方式向村民表示感謝：「Cheers mate!」<br>成功使用澳洲暗號，代表公主正式獲得雪梨居民認證。</p>
+                <div class="task-req">* 結帳完跟店員說 cheers mate 🌟🌟</div>
+            </div>
+            <div class="card">
+                <h3>2. 夕陽旋轉魔法</h3>
+                <p>每天太陽準備離開雪梨王國時，天空都會偷偷施展一場金色魔法。<br>傳說只有快樂的人，才能被夕陽記錄下來。<br>公主必須在夕陽之下，留下屬於自己的魔法影像。</p>
+                <div class="task-req">* 在夕陽下錄影轉圈圈 🌟🌟🌟</div>
+            </div>
+            <div class="card">
+                <h3>3. 陌生旅人的祝福</h3>
+                <p>旅途中，有些珍貴畫面無法靠自己完成。<br>真正勇敢的冒險者，必須相信陌生旅人的善意。<br>找到一位王國居民，請他幫忙留下三位守護者與公主的冒險紀錄。</p>
+                <div class="task-req">* 請路人幫我們四個拍照 🌟🌟🌟</div>
+            </div>
+            <div class="card">
+                <h3>4. 道路魔法啟動儀式</h3>
+                <p>雪梨王國中藏著許多城市魔法機關。<br>其中最重要的一個，就是控制道路通行的神秘按鈕。<br>只有學會使用它的冒險者，才能順利前往下一個目的地。</p>
+                <div class="task-req">* 按過馬路的按鈕 🌟🌟</div>
+            </div>
+            <div class="card">
+                <h3>5. 冰雪甜蜜咒語</h3>
+                <p>在雪梨王國中，住著一位守護甜蜜的冰雪精靈。<br>傳說只有唱出真正幸福的旋律，才能獲得他的祝福。<br>公主必須施展甜蜜魔法，讓身邊的人感受到快樂。</p>
+                <div class="task-req">* 對雪王唱「你愛我我愛你蜜雪冰城甜蜜蜜」（可以在他耳邊小聲唱） 🌟🌟🌟</div>
+            </div>
+            <div class="card">
+                <h3>6. 商店精靈的推薦預言</h3>
+                <p>每一家商店裡，都藏著一位熟悉寶物的精靈。<br>他們知道哪些東西值得被發現。<br>勇敢的冒險者，不能只尋找自己熟悉的寶物，必須向居民詢問未知的驚喜。</p>
+                <div class="task-req">* 問店員推薦什麼 🌟🌟</div>
+            </div>
+            <div class="card">
+                <h3>7. 澳洲飲品魔法</h3>
+                <p>不小心誤入原始部落，族長十分不認可我們闖入的行動不肯放我們離開雪梨<br>若想離開，就必須品嚐當地流傳的魔法飲品Chai Latte，代表公主認可了部落。</p>
+                <div class="task-req">* 喝一杯 chai latte 🌟🌟</div>
+            </div>
+            <div class="card">
+                <h3>8. 命運伙伴尋找術</h3>
+                <p>救命救命！公主的守護者被封印在娃娃裡面了<br>現在以靈魂型態在公主身邊的守護者急需要公主的幫助<br>公主必須找到最符合每位守護者的代表。</p>
+                <div class="task-req">* 在 Jellycat 找到最像守護者們的娃娃並且對娃娃說 復活吧我的愛人 🌟🌟</div>
+            </div>
+            <div class="card">
+                <h3>9. 公主優雅封印術</h3>
+                <p>身為王國公主，Jasmine 均必須維持優雅形象。<br>但是其他守護者將受到搞怪魔法影響，必須挑戰做出最奇怪的表情。<br>看看誰能讓大家笑出聲！</p>
+                <div class="task-req">* 宜均不辦鬼臉，其他人辦 🌟🌟🌟</div>
+            </div>
+            <div class="card">
+                <h3>10. 異國語言外交任務</h3>
+                <p>不同王國有不同的語言。身為公主，學習如何外交也是必要的修養<br>即使面對陌生語言，也能勇敢表達自己的需求。<br>今天，公主將成為隊伍外交官。</p>
+                <div class="task-req">* 一個人全程用英文點所有人的餐 🌟🌟🌟</div>
+            </div>
+            <div class="card">
+                <h3>11. 澳洲召喚魔法</h3>
+                <p>糟糕！我們被發現不是當地人了<br>使用澳洲王國的一個神秘咒語。<br>當勇者喊出：「Aussie Aussie Aussie!」<br>所有伙伴必須回應：「Oi Oi Oi!」<br>成功融入當地人吧</p>
+                <div class="task-req">* 🍑喊：Aussie Aussie Aussie！ 所有人接：Oi Oi Oi！ 🌟🌟🌟</div>
+            </div>
+            <div class="card">
+                <h3>12. 神秘食物鑑定師</h3>
+                <p>雪梨王國的超市中，藏著許多未知的魔法食物。<br>有些外表奇特，有些味道令人驚訝。<br>真正的冒險者，必須找到最不可思議的寶物。</p>
+                <div class="task-req">* 比賽找出超市最奇怪的零食 🌟🌟</div>
+            </div>
+        </div>
+
+        <!-- 王國副本 -->
+        <div id="Dungeons" class="tab-content">
+            <h2>雪梨王國副本</h2>
+            <p>Jasmine 均公主正式獲得了雪梨王國的冒險資格。<br>
+            然而，真正的寶藏並不藏在某一個地方。<br>
+            它們散落在雪梨王國各個角落，等待公主親自探索、體驗，並留下屬於自己的故事。<br>
+            每抵達指定地點，副本將彈出等待公主去破解</p>
+
+            <div class="card">
+                <h3>🎨 Newtown 藝術精靈村</h3>
+                <p>在雪梨王國的西方，住著一群熱愛創作的藝術精靈。<br>他們相信，世界上沒有完全一樣的作品，就像每個人都有屬於自己的故事。<br>如果公主願意放慢腳步，就一定能找到屬於自己的寶物。</p>
+                <p><strong>1. 精靈打卡任務</strong><br>藝術精靈們喜歡把自己的作品，藏在村莊的每個角落。<br>找到指定地點，留下公主到訪的證明。<br>
+                <span class="task-req">在指定地點拍照 🌟🌟</span></p>
+                <p><strong>2. 命定的寶物</strong><br>每位旅人，都會在藝術精靈村遇見一件命中注定的寶物。<br>也許是一張明信片、一枚胸針、一件飾品，又或者只是讓你忍不住停下腳步的小東西。<br>只要它讓公主心動，那就是屬於妳的寶藏。<br>
+                <span class="task-req">買到一樣心儀的紀念品 🌟🌟</span></p>
+            </div>
+
+            <div class="card">
+                <h3>🏰 Sydney University 魔法學院</h3>
+                <p>傳說雪梨王國最厲害的巫師，都曾在這座古老學院學習。<br>這裡收藏著數百年的知識，也流傳著許多關於魔法的故事。<br>只有充滿想像力的人，才能真正進入魔法學院。</p>
+                <p><strong>1. 飛行魔法課</strong><br>每一位魔法學徒，都夢想擁有自己的掃把。<br>今天，請公主施展飛行魔法，留下屬於自己的第一堂魔法課。<br>
+                <span class="task-req">* 在哈利波特樓假裝自己有掃把 🌟🌟</span></p>
+                <p><strong>2. 王子的紳士考驗</strong><br>真正的王子，不只是帥氣。<br>更重要的是，是否願意細心照顧身邊重要的人。<br>今天，王子將接受紳士試煉。<br>
+                <span class="task-req">* Mark 王子幫 Jasmine 公主繫鞋帶 🌟🌟🌟</span></p>
+            </div>
+
+            <div class="card">
+                <h3>🌃 天文台 星空許願塔</h3>
+                <p>雪梨王國最高的觀星塔，收藏著所有旅人的願望。<br>傳說只要真心說出口，星星就會悄悄記住。<br>而有些話，平常很少說，卻最值得被聽見。</p>
+                <p><strong>1. 夕陽誓約</strong><br>今晚，四位守護者一起望向天空。用愛心，留下屬於彼此的回憶。<br>
+                <span class="task-req">* 四個人一起比愛心拍照 🌟🌟</span></p>
+                <p><strong>2. 真心魔法</strong><br>在旅途中，有一句話比任何禮物都珍貴。<br>請守護者說一句：平常不好意思說出口的感謝。<br>讓今晚的星空，替大家收藏這份心意。<br>
+                <span class="task-req">* 同行的人對你說一句平常不會說的謝謝 🌟🌟🌟</span></p>
+            </div>
+
+            <div class="card">
+                <h3>🌈 UNSW 精靈彩虹學院</h3>
+                <p>這裡是一座充滿青春與夢想的學院。<br>每天都有無數學生，為了自己的未來努力。<br>彩虹階梯代表勇氣，吊籃代表休息。<br>因為人生不只要努力，也要記得享受當下。</p>
+                <p><strong>1. 彩虹祝福</strong><br>傳說只要四位旅人一起走過彩虹，友情就會更加深厚。<br>請牽起彼此的手，一起走向未來。<br>
+                <span class="task-req">- 在彩虹樓梯四個人牽手走30秒 🌟🌟🌟</span></p>
+                <p><strong>2. 學生限定休息術</strong><br>即使是勇敢的冒險者，偶爾也需要放空一下。<br>今天，請假裝自己被作業打敗。<br>
+                <span class="task-req">- 吊籃躺下假裝作業做不出來 🌟🌟</span></p>
+            </div>
+
+            <div class="card">
+                <h3>🏛 歌劇院 海港水晶宮</h3>
+                <p>這座白色城堡，是雪梨王國最著名的地標。<br>傳說每位來到這裡的人，都會留下最珍貴的一張照片。</p>
+                <p><strong>1. 公主的魔法</strong><br>據說只有真正的公主，才能用魔法托起整座宮殿。<br>現在，請試著施展妳的魔法吧！<br>
+                <span class="task-req">* 把歌劇院捧在手心拍照 🌟🌟🌟</span></p>
+                <p><strong>2. 王國休息時間</strong><br>經過漫長旅程，公主也需要休息。<br>請躺在港邊石椅，吹吹海風，欣賞雪梨王國最美的風景。<br>
+                <span class="task-req">- 在石頭躺椅上拍照 🌟🌟</span></p>
+            </div>
+
+            <div class="card">
+                <h3>🏔 藍山 雲端天空神殿</h3>
+                <p>離開雪梨王國後，公主一行人來到了傳說中的天空神殿。<br>這裡終年被雲霧環繞，森林精靈、山谷守護獸以及古老的天空魔法，都藏在這片山林之中。<br>只有勇敢的冒險者，才能站在天空之上，俯瞰整個王國。</p>
+                <p><strong>1. 飛翔試煉</strong><br>想要抵達天空神殿，必須先通過飛行考驗。<br>傳說紅色纜車，是古代魔法師留下的飛行工具。<br>請公主鼓起勇氣，搭上天空列車，留下飛翔的證明。<br>
+                <span class="task-req">* 在紅色纜車上錄影 🌟🌟🌟</span></p>
+                <p><strong>2. 王國攝影師</strong><br>每一次旅行，都值得留下最珍貴的畫面。<br>今天，王子將化身王國御用攝影師，替公主留下屬於天空神殿的回憶。<br>
+                <span class="task-req">* 在纜車上請 Mark 王子拍一張照片 🌟🌟</span></p>
+            </div>
+
+            <div class="card">
+                <h3>🦘 澳洲動物園 魔法動物森林</h3>
+                <p>雪梨王國最神秘的森林，住著許多傳說中的守護生物。<br>牠們平時靜靜守護著這片土地，等待善良的旅人前來拜訪。<br>只要得到牠們的祝福，公主便能獲得更多幸福星星。</p>
+                <p><strong>1. 袋鼠守護者</strong><br>袋鼠一族，是澳洲王國最勇敢的居民。<br>請與袋鼠留下合照，接受牠們的勇氣祝福。<br>
+                <span class="task-req">* 跟袋鼠合照 🌟🌟</span></p>
+                <p><strong>2. 森林精靈</strong><br>無尾熊是森林中最溫柔的守護者。<br>雖然總是懶洋洋的，卻默默守護著每一位旅人。<br>如果能遇見牠，代表今天一定會有好運。<br>
+                <span class="task-req">* 跟無尾熊合照 🌟🌟</span></p>
+                <p><strong>3. 靈魂守護獸</strong><br>每位冒險者，其實都有一隻最像自己的守護動物。<br>有的人像袋鼠，有的人像企鵝，有的人像狐獴，也有人像水豚。<br>討論看看，哪一隻最像彼此吧！<br>
+                <span class="task-req">* 找到每個人的代表動物 🌟🌟</span></p>
+                <p><strong>4. 袋鼠跳跳咒</strong><br>得到袋鼠祝福後，每位冒險者都要完成最後的儀式。<br>一起跳躍，象徵未來的人生，一步一步向幸福前進。<br>
+                <span class="task-req">* 所有人一起學袋鼠跳 🌟🌟</span></p>
+            </div>
+
+            <div class="card">
+                <h3>🌊 Bondi Beach 海洋王國</h3>
+                <p>穿越城市後，公主終於抵達了海洋王國。<br>傳說海浪能帶走煩惱，海風能替人保管秘密。<br>所以來到這裡的人，都會把最真實的心情，留給大海。</p>
+                <p><strong>1. 勇氣告白</strong><br>大海是世界上最會保守秘密的人。<br>請勇敢把心中的愛，大聲告訴大海。<br>不用害羞，因為海浪會替妳保密。<br>
+                <span class="task-req">* 對著大海大喊："I love you!" 🌟🌟🌟</span></p>
+                <p><strong>2. 公主的早餐</strong><br>每位公主，都有自己的生活方式。<br>有人喜歡精緻的宮廷早餐，有人喜歡簡單的路邊美食。<br>今天，請選擇妳最想要的一種，享受屬於自己的海邊早晨。<br>
+                <span class="task-req">* 早餐二選一：🥐 路邊小攤 🍽️ 餐廳早餐</span></p>
+            </div>
+
+            <div class="card">
+                <h3>🏮 Chinatown 東方商人市集</h3>
+                <p>雪梨王國裡，有一座充滿東方文化的神秘市集。<br>來自不同國家的旅人，都會在這裡停留。<br>或許，還能找到熟悉的家鄉味。</p>
+                <p><strong>1. 故鄉的味道</strong><br>再遙遠的旅程，也會想起家的味道。<br>找到一家台灣餐廳，看看是否有一道熟悉的料理，能喚起妳的回憶。<br>
+                <span class="task-req">* 找到台灣餐廳 🌟🌟</span></p>
+                <p><strong>2. Darling 魔法</strong><br>雪梨王國有一座叫 Darling Harbour 的港口。<br>今天，請對羊羹先生施展專屬魔法。<br>從現在開始，他將暫時改名為："Darling。"<br>
+                <span class="task-req">* 在 Darling Harbour 叫羊羹先生 Darling 🌟🌟</span></p>
+            </div>
+
+            <div class="card">
+                <h3>🪨 The Rocks 古老寶藏街</h3>
+                <p>這裡是雪梨王國最古老的地方。<br>石頭街道、古老建築、小小商店，每一間店，都收藏著不同故事。<br>如果願意慢慢走，一定能找到屬於自己的寶藏。</p>
+                <p><strong>1. 尋寶時間</strong><br>寶藏，不一定是最昂貴的。<br>有時，一間不起眼的小店，反而藏著最特別的驚喜。<br>請找到今天最喜歡的一家店。<br>
+                <span class="task-req">* 找到你覺得最有特色的小店 🌟🌟</span></p>
+                <p><strong>2. 傳說中的巨獸</strong><br>雪梨王國曾經住著一隻巨大鱷魚。<br>有人說，牠現在依然藏在 The Rocks 的某個角落。<br>如果找到牠，代表今天受到幸運女神眷顧。<br>
+                <span class="task-req">* 找到鱷魚 🌟🌟</span></p>
+            </div>
+
+            <div class="card">
+                <h3>🏰 Queen Victoria Building 水晶宮殿</h3>
+                <p>雪梨王國最華麗的宮殿，擁有彩繪玻璃、巨大時鐘、優雅走廊。<br>據說，每一位真正的公主，都一定會來到這裡。<br>因為，只有走進宮殿，冒險才算真正開始。</p>
+                <p><strong>1. 公主留影</strong><br>陽光穿過彩繪玻璃，灑落在宮殿中央。<br>請在最美的地方，留下屬於公主的照片。<br>
+                <span class="task-req">* 跟漂亮的雕花玻璃拍照 🌟🌟</span></p>
+                <p><strong>2. 巧克力寶藏</strong><br>宮殿裡，藏著一間充滿幸福香氣的魔法巧克力店。<br>據說，找到它的人，接下來的旅程都會甜甜的。<br>
+                <span class="task-req">* 找到 Koko Black 🌟🌟</span></p>
+                <p><strong>3. 幸福收藏家</strong><br>一路走來，公主一定收集了很多回憶。<br>也許是一句很好笑的話，一張照片，一個擁抱，或者是一件微不足道的小事。<br>今晚，請大家一起分享：今天最幸福的一個瞬間。<br>因為真正的寶藏，從來不是買到的東西，而是那些一起經歷的時光。<br>
+                <span class="task-req">* 從現在開始搜集開心的瞬間，晚上在酒吧分享 🌟🌟🌟</span></p>
+            </div>
+        </div>
+
+        <!-- 祈願儀式 -->
+        <div id="Ceremony" class="tab-content">
+            <h2>幸福星星的祈願儀式</h2>
+            <p>在雪梨王國裡，流傳著一個只有極少數旅人知道的傳說。<br>
+            每當一位冒險者收集到足夠多的幸福星星，星星便會開始回應他的心願。<br>
+            但它們並不會直接實現願望。<br>
+            而是會默默守護那些，真心珍惜身邊的人。<br>
+            因此，在王國最重要的十個地方，都藏著一座「願望祭壇」。<br>
+            當公主來到祭壇前，只要真心許下一個願望，星星便會開始閃耀。</p>
+
+            <div class="card">
+                <h3>🌟 祈願儀式規則</h3>
+                <p>當抵達指定地點時，Jasmine 均公主必須：<br>
+                ✨ 閉上眼睛<br>
+                ✨ 在心裡默默許下一個願望<br>
+                ✨ 不可以偷看<br>
+                ✨ 聽到星星掉下來才能睜開眼睛</p>
+                <p>這時，三位守護者將偷偷施展魔法，各自在公主身後做出不同的動作。<br>
+                如果公主成功猜中任何一位守護者的動作，代表星星接受了這份願望，願望將受到雪梨王國的祝福。<br>
+                如果沒有猜中，也沒有關係。<br>
+                因為有些願望，需要一點時間慢慢長大。</p>
+            </div>
+
+            <div class="card">
+                <h3>願望祭壇地點</h3>
+                <p>1. 大教堂</p>
+                <p>2. 賣卡夫人石椅</p>
+                <p>3. 歌劇院</p>
+                <p>4. QVB</p>
+                <p>5. bondi 海灘</p>
+                <p>6. UNSW大學</p>
+                <p>7. 雪梨大學</p>
+                <p>8. 天文台</p>
+                <p>9. 指定酒吧</p>
+                <p>10. 神秘地點</p>
+            </div>
+        </div>
+
     </div>
 
-    <div id="dungeon-usyd" class="card">
-        <h3>🏰 Sydney University 魔法學院</h3>
-        <p>傳說雪梨王國最厲害的巫師，都曾在這座古老學院學習。</p>
-        <p><strong>1. 飛行魔法課</strong><br>今天，請公主施展飛行魔法，留下屬於自己的第一堂魔法課。<br>
-        <span class="task-req">* 在哈利波特樓假裝自己有掃把 🌟🌟</span></p>
-        <p><strong>2. 王子的紳士考驗</strong><br>今天，王子將接受紳士試煉。<br>
-        <span class="task-req">* Mark 王子幫 Jasmine 公主繫鞋帶 🌟🌟🌟</span></p>
-    </div>
-
-    <div id="dungeon-observatory" class="card">
-        <h3>🌃 天文台 星空許願塔</h3>
-        <p>雪梨王國最高的觀星塔，收藏著所有旅人的願望。</p>
-        <p><strong>1. 夕陽誓約</strong><br>今晚，四位守護者一起望向天空。用愛心，留下屬於彼此的回憶。<br>
-        <span class="task-req">* 四個人一起比愛心拍照 🌟🌟</span></p>
-        <p><strong>2. 真心魔法</strong><br>請守護者說一句：平常不好意思說出口的感謝。<br>
-        <span class="task-req">* 同行的人對你說一句平常不會說的謝謝 🌟🌟🌟</span></p>
-    </div>
-
-    <div id="dungeon-unsw" class="card">
-        <h3>🌈 UNSW 精靈彩虹學院</h3>
-        <p>彩虹階梯代表勇氣，吊籃代表休息。因為人生不只要努力，也要記得享受當下。</p>
-        <p><strong>1. 彩虹祝福</strong><br>請牽起彼此的手，一起走向未來。<br>
-        <span class="task-req">- 在彩虹樓梯四個人牽手走30秒 🌟🌟🌟</span></p>
-        <p><strong>2. 學生限定休息術</strong><br>今天，請假裝自己被作業打敗。<br>
-        <span class="task-req">- 吊籃躺下假裝作業做不出來 🌟🌟</span></p>
-    </div>
-    
-    <div id="dungeon-opera" class="card">
-        <h3>🏛 歌劇院 海港水晶宮</h3>
-        <p>這座白色城堡，是雪梨王國最著名的地標。<br>傳說每位來到這裡的人，都會留下最珍貴的一張照片。</p>
-        <p><strong>1. 公主的魔法</strong><br>據說只有真正的公主，才能用魔法托起整座宮殿。<br>現在，請試著施展妳的魔法吧！<br>
-        <span class="task-req">* 把歌劇院捧在手心拍照 🌟🌟🌟</span></p>
-        <p><strong>2. 王國休息時間</strong><br>經過漫長旅程，公主也需要休息。<br>請躺在港邊石椅，吹吹海風，欣賞雪梨王國最美的風景。<br>
-        <span class="task-req">- 在石頭躺椅上拍照 🌟🌟</span></p>
-    </div>
-   
-    <!--"改"-->
-    <div id="dungeon-bluemountain" class="card">
-        <h3>🏔 藍山 雲端天空神殿</h3>
-        <p>離開雪梨王國後，公主一行人來到了傳說中的天空神殿。<br>這裡終年被雲霧環繞，森林精靈、山谷守護獸以及古老的天空魔法，都藏在這片山林之中。<br>只有勇敢的冒險者，才能站在天空之上，俯瞰整個王國。</p>
-        <p><strong>1. 飛翔試煉</strong><br>想要抵達天空神殿，必須先通過飛行考驗。<br>傳說紅色纜車，是古代魔法師留下的飛行工具。<br>請公主鼓起勇氣，搭上天空列車，留下飛翔的證明。<br>
-        <span class="task-req">* 在紅色纜車上錄影 🌟🌟🌟</span></p>
-        <p><strong>2. 王國攝影師</strong><br>每一次旅行，都值得留下最珍貴的畫面。<br>今天，王子將化身王國御用攝影師，替公主留下屬於天空神殿的回憶。<br>
-        <span class="task-req">* 在纜車上請 Mark 王子拍一張照片 🌟🌟</span></p>
-    </div>
-    
-    <div id="dungeon-zoo" class="card">
-        <h3>🦘 澳洲動物園 魔法動物森林</h3>
-        <p>雪梨王國最神秘的森林，住著許多傳說中的守護生物。<br>牠們平時靜靜守護著這片土地，等待善良的旅人前來拜訪。<br>只要得到牠們的祝福，公主便能獲得更多幸福星星。</p>
-        <p><strong>1. 袋鼠守護者</strong><br>袋鼠一族，是澳洲王國最勇敢的居民。<br>請與袋鼠留下合照，接受牠們的勇氣祝福。<br>
-        <span class="task-req">* 跟袋鼠合照 🌟🌟</span></p>
-        <p><strong>2. 森林精靈</strong><br>無尾熊是森林中最溫柔的守護者。<br>雖然總是懶洋洋的，卻默默守護著每一位旅人。<br>如果能遇見牠，代表今天一定會有好運。<br>
-        <span class="task-req">* 跟無尾熊合照 🌟🌟</span></p>
-        <p><strong>3. 靈魂守護獸</strong><br>每位冒險者，其實都有一隻最像自己的守護動物。<br>有的人像袋鼠，有的人像企鵝，有的人像狐獴，也有人像水豚。<br>討論看看，哪一隻最像彼此吧！<br>
-        <span class="task-req">* 找到每個人的代表動物 🌟🌟</span></p>
-        <p><strong>4. 袋鼠跳跳咒</strong><br>得到袋鼠祝福後，每位冒險者都要完成最後的儀式。<br>一起跳躍，象徵未來的人生，一步一步向幸福前進。<br>
-        <span class="task-req">* 所有人一起學袋鼠跳 🌟🌟</span></p>
-    </div>
-
-    <div id="dungeon-kingdom_of_sea" class="card">
-        <h3>🌊 Bondi Beach 海洋王國</h3>
-        <p>穿越城市後，公主終於抵達了海洋王國。<br>傳說海浪能帶走煩惱，海風能替人保管秘密。<br>所以來到這裡的人，都會把最真實的心情，留給大海。</p>
-        <p><strong>1. 勇氣告白</strong><br>大海是世界上最會保守秘密的人。<br>請勇敢把心中的愛，大聲告訴大海。<br>不用害羞，因為海浪會替妳保密。<br>
-        <span class="task-req">* 對著大海大喊："I love you!" 🌟🌟🌟</span></p>
-        <p><strong>2. 公主的早餐</strong><br>每位公主，都有自己的生活方式。<br>有人喜歡精緻的宮廷早餐，有人喜歡簡單的路邊美食。<br>今天，請選擇妳最想要的一種，享受屬於自己的海邊早晨。<br>
-        <span class="task-req">* 早餐二選一：🥐 路邊小攤 🍽️ 餐廳早餐</span></p>
-    </div>
-    
-    <div id="dungeon-Chinatown" class="card">
-        <h3>🏮 Chinatown 東方商人市集</h3>
-        <p>雪梨王國裡，有一座充滿東方文化的神秘市集。<br>來自不同國家的旅人，都會在這裡停留。<br>或許，還能找到熟悉的家鄉味。</p>
-        <p><strong>1. 故鄉的味道</strong><br>再遙遠的旅程，也會想起家的味道。<br>找到一家台灣餐廳，看看是否有一道熟悉的料理，能喚起妳的回憶。<br>
-        <span class="task-req">* 找到台灣餐廳 🌟🌟</span></p>
-        <p><strong>2. Darling 魔法</strong><br>雪梨王國有一座叫 Darling Harbour 的港口。<br>今天，請對羊羹先生施展專屬魔法。<br>從現在開始，他將暫時改名為："Darling。"<br>
-        <span class="task-req">* 在 Darling Harbour 叫羊羹先生 Darling 🌟🌟</span></p>
-    </div>   
-
-    <div id="dungeon-The_Rocks" class="card">
-        <h3>🪨 The Rocks 古老寶藏街</h3>
-        <p>這裡是雪梨王國最古老的地方。<br>石頭街道、古老建築、小小商店，每一間店，都收藏著不同故事。<br>如果願意慢慢走，一定能找到屬於自己的寶藏。</p>
-        <p><strong>1. 尋寶時間</strong><br>寶藏，不一定是最昂貴的。<br>有時，一間不起眼的小店，反而藏著最特別的驚喜。<br>請找到今天最喜歡的一家店。<br>
-        <span class="task-req">* 找到你覺得最有特色的小店 🌟🌟</span></p>
-        <p><strong>2. 傳說中的巨獸</strong><br>雪梨王國曾經住著一隻巨大鱷魚。<br>有人說，牠現在依然藏在 The Rocks 的某個角落。<br>如果找到牠，代表今天受到幸運女神眷顧。<br>
-        <span class="task-req">* 找到鱷魚 🌟🌟</span></p>
-    </div>  
-    
-    <div id="dungeon-Queen_Victoria_Building" class="card">
-        <h3>🏰 Queen Victoria Building 水晶宮殿</h3>
-        <p>雪梨王國最華麗的宮殿，擁有彩繪玻璃、巨大時鐘、優雅走廊。<br>據說，每一位真正的公主，都一定會來到這裡。<br>因為，只有走進宮殿，冒險才算真正開始。</p>
-        <p><strong>1. 公主留影</strong><br>陽光穿過彩繪玻璃，灑落在宮殿中央。<br>請在最美的地方，留下屬於公主的照片。<br>
-        <span class="task-req">* 跟漂亮的雕花玻璃拍照 🌟🌟</span></p>
-        <p><strong>2. 巧克力寶藏</strong><br>宮殿裡，藏著一間充滿幸福香氣的魔法巧克力店。<br>據說，找到它的人，接下來的旅程都會甜甜的。<br>
-        <span class="task-req">* 找到 Koko Black 🌟🌟</span></p>
-        <p><strong>3. 幸福收藏家</strong><br>一路走來，公主一定收集了很多回憶。<br>也許是一句很好笑的話，一張照片，一個擁抱，或者是一件微不足道的小事。<br>今晚，請大家一起分享：今天最幸福的一個瞬間。<br>因為真正的寶藏，從來不是買到的東西，而是那些一起經歷的時光。<br>
-        <span class="task-req">* 從現在開始搜集開心的瞬間，晚上在酒吧分享 🌟🌟🌟</span></p>
-    </div>
-</div>
-    
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- 祈願儀式 -->
-<div id="Ceremony" class="tab-content">
-    <h2>幸福星星的祈願儀式</h2>
-    <p>在雪梨王國裡，流傳著一個只有極少數旅人知道的傳說。<br>
-    每當一位冒險者收集到足夠多的幸福星星，星星便會開始回應他的心願。<br>
-    但它們並不會直接實現願望。<br>
-    而是會默默守護那些，真心珍惜身邊的人。<br>
-    因此，在王國最重要的十個地方，都藏著一座「願望祭壇」。<br>
-    當公主來到祭壇前，只要真心許下一個願望，星星便會開始閃耀。</p>
-
-    <div class="card">
-        <h3>🌟 祈願儀式規則</h3>
-        <p>當抵達指定地點時，Jasmine 均公主必須：<br>
-        ✨ 閉上眼睛<br>
-        ✨ 在心裡默默許下一個願望<br>
-        ✨ 不可以偷看<br>
-        ✨ 聽到星星掉下來才能睜開眼睛</p>
-        <p>這時，三位守護者將偷偷施展魔法，各自在公主身後做出不同的動作。<br>
-        如果公主成功猜中任何一位守護者的動作，代表星星接受了這份願望，願望將受到雪梨王國的祝福。<br>
-        如果沒有猜中，也沒有關係。<br>
-        因為有些願望，需要一點時間慢慢長大。</p>
-    </div>
-
-    <div class="card">
-        <h3>願望祭壇地點</h3>
-        <p>1. 大教堂</p>
-        <p>2. 賣卡夫人石椅</p>
-        <p>3. 歌劇院</p>
-        <p>4. QVB</p>
-        <p>5. bondi 海灘</p>
-        <p>6. UNSW大學</p>
-        <p>7. 雪梨大學</p>
-        <p>8. 天文台</p>
-        <p>9. 指定酒吧</p>
-        <p>10. 神秘地點</p>
-    </div>
-</div>
-
-<script>
-function openTab(evt, tabName) {
-    var i, tabcontent, tablinks;
-    tabcontent = document.getElementsByClassName("tab-content");
-    for (i = 0; i < tabcontent.length; i++) {
-        tabcontent[i].style.display = "none";
-    }
-    tablinks = document.getElementsByClassName("tablinks");
-    for (i = 0; i < tablinks.length; i++) {
-        tablinks[i].className = tablinks[i].className.replace(" active", "");
-    }
-    document.getElementById(tabName).style.display = "block";
-    evt.currentTarget.className += " active";
-}
-// 啟動折疊選單 (Accordion) 的功能
-var acc = document.getElementsByClassName("accordion");
-var j;
-for (j = 0; j < acc.length; j++) {
-    acc[j].addEventListener("click", function() {
-        this.classList.toggle("active");
-        var panel = this.nextElementSibling;
-        if (panel.style.maxHeight) {
-            panel.style.maxHeight = null;
-        } else {
-            panel.style.maxHeight = panel.scrollHeight + "px";
+    <script>
+    function openContent(evt, tabName) {
+        // 隱藏所有視窗內容
+        var tabcontent = document.getElementsByClassName("tab-content");
+        for (var i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
         }
-    });
-}
-</script>
+        
+        // 移除所有按鈕的 active 狀態
+        var tablinks = document.getElementsByClassName("tablinks");
+        for (var i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        
+        // 顯示被點擊的視窗，並把按鈕加上 active 標籤
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.className += " active";
+
+        // 當在手機版時，點擊選單後自動將右側視窗滑動到最上方
+        document.querySelector('.main-content').scrollTop = 0;
+    }
+    </script>
 
 </body>
 </html>
