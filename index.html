@@ -283,7 +283,7 @@
             0% { opacity: 0; transform: scale(0); }
             100% { opacity: 1; transform: scale(1); }
         }
-        /* --- 6. 手機版自動適應 (修復跑版與防擁擠優化) --- */
+        /* --- 6. 手機版自動適應 (修復跑版與防卡住優化) --- */
         @media screen and (max-width: 768px) {
             .top-nav button { padding: 10px 15px; font-size: 1rem; }
             .dungeon-layout { flex-direction: column; }
@@ -303,21 +303,30 @@
                 border-bottom: 3px solid transparent; padding: 12px 15px;
                 flex-shrink: 0; 
             }
+
+            /* 🪄 新增：在次級選單最後面加一點空氣，讓最後一個選項(QVB)不會黏在邊緣 */
+            .dungeon-sidebar::after {
+                content: '';
+                flex-shrink: 0;
+                width: 15px;
+            }
             
             .dungeon-sidebar button.active {
                 border-left: none; border-bottom: 3px solid var(--accent-color);
             }
             
-            /* 讓內容區塊貼齊邊緣 */
-            .dungeon-detail, .tab-content { padding: 15px 10px; }
-            
-            /* 👇 新增：對話框專屬防擁擠優化 👇 */
-            .card {
-                padding: 15px 15px; /* 縮小內部留白，把空間還給文字和圖片 */
-                border-radius: 10px; /* 圓角稍微縮小，視覺更俐落 */
+            /* 🪄 終極防卡住優化：在底部加上 80px 的超大留白，絕對不會再被切斷！ */
+            .dungeon-detail, .tab-content { 
+                padding: 15px 10px 80px 10px; 
             }
             
-            h2 { font-size: 1.4rem; padding-bottom: 8px; } /* 標題微調大小 */
+            /* 對話框專屬防擁擠優化 */
+            .card {
+                padding: 15px 15px;
+                border-radius: 10px;
+            }
+            
+            h2 { font-size: 1.4rem; padding-bottom: 8px; }
             h3 { font-size: 1.2rem; }
             
             /* 縮小手機版印章尺寸，絕對不擋文字 */
