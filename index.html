@@ -20,8 +20,8 @@
             padding: 0;
             display: flex;
             flex-direction: column;
-            height: 100vh;  /* 給舊手機的備用 */
-            height: 100dvh; /* 🪄 就是少了這一行！自動扣除 LINE 底部的導覽列 */
+            height: 100vh;
+            height: 100dvh;
             background-color: var(--bg-color);
             color: var(--text-color);
             line-height: 1.6;
@@ -40,7 +40,6 @@
         .header-title {
             text-align: center;
             padding: 10px 0 5px;
-            /* 讓標題不能被文字反白，方便連續點擊 */
             user-select: none; 
             -webkit-user-select: none;
         }
@@ -50,16 +49,26 @@
             font-size: 1.5rem;
             color: var(--primary-color);
             letter-spacing: 1px;
-            cursor: pointer; /* 讓鼠標移過去知道可以點 */
+            cursor: pointer;
             display: inline-block;
         }
 
         .top-nav {
             display: flex;
-            justify-content: center;
+            justify-content: flex-start; /* 🪄 改成從左邊對齊，就不會被吃掉了！ */
             overflow-x: auto;
             white-space: nowrap;
+            -webkit-overflow-scrolling: touch; 
+            scrollbar-width: none; 
         }
+
+        /* 🪄 補充魔法：確保電腦版螢幕夠大時，還是可以漂亮地置中 */
+        @media screen and (min-width: 769px) {
+            .top-nav {
+                justify-content: center;
+            }
+        }
+        .top-nav::-webkit-scrollbar { display: none; }
 
         .top-nav button {
             background: none;
@@ -71,9 +80,10 @@
             cursor: pointer;
             transition: 0.3s;
             border-bottom: 4px solid transparent;
-            /* 🪄 新增：不准換行、不准縮水 */
-            white-space: nowrap; 
-            flex-shrink: 0;
+            /* 🍎 iOS 專用：絕對防擠壓魔法，保證字絕對不會被喀嚓 */
+            white-space: nowrap !important;
+            flex: 0 0 auto !important;
+            min-width: max-content !important;
         }
 
         .top-nav button:hover {
@@ -111,8 +121,8 @@
             to { opacity: 1; }
         }
 
-        /* --- 3. 副本左右雙欄設計 --- */
-        #Dungeons { padding: 0; }
+        /* --- 3. 雙欄設計 (移除三個區域的外框預設白邊) --- */
+        #Dungeons, #Explore, #Trials { padding: 0; }
         
         .dungeon-layout {
             display: flex;
@@ -128,7 +138,10 @@
             overflow-y: auto;
             display: flex;
             flex-direction: column;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
         }
+        .dungeon-sidebar::-webkit-scrollbar { display: none; }
 
         .dungeon-sidebar button {
             background: none;
@@ -142,9 +155,10 @@
             color: var(--primary-color);
             cursor: pointer;
             transition: 0.2s;
-            /* 🪄 新增：不准換行、不准縮水 */
-            white-space: nowrap; 
-            flex-shrink: 0;
+            /* 🍎 iOS 專用：絕對防擠壓魔法 */
+            white-space: nowrap !important;
+            flex: 0 0 auto !important;
+            min-width: max-content !important;
         }
 
         .dungeon-sidebar button:hover { background-color: #fdfbf7; }
@@ -160,6 +174,7 @@
             overflow-y: auto;
             padding: 30px;
             background-color: var(--bg-color);
+            -webkit-overflow-scrolling: touch;
         }
 
         .dungeon-pane, .explore-pane, .trial-pane {
@@ -176,8 +191,8 @@
             margin-bottom: 20px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.04);
             border-left: 5px solid var(--accent-color);
-            position: relative; /* 為了讓戳章可以絕對定位在裡面 */
-            overflow: hidden; /* 防止戳章超出卡片邊界 */
+            position: relative; 
+            overflow: hidden; 
             transition: all 0.4s ease;
         }
 
@@ -212,7 +227,6 @@
         }
 
         /* --- 5. 蓋章完成特效 (魔法的核心) --- */
-        /* 卡片變暗變灰 */
         .card.completed {
             background-color: #f2f2f2;
             border-left-color: #b0bec5;
@@ -225,12 +239,11 @@
             opacity: 0.7;
         }
 
-        /* 戳章樣式與隱藏狀態 */
         .stamp {
             position: absolute;
             top: 20px;
             right: 20px;
-            transform: rotate(-20deg) scale(3); /* 初始放大且歪斜 */
+            transform: rotate(-20deg) scale(3); 
             color: #d32f2f;
             border: 4px dashed #d32f2f;
             padding: 5px 15px;
@@ -238,20 +251,18 @@
             font-weight: 900;
             border-radius: 8px;
             opacity: 0;
-            pointer-events: none; /* 不會擋住滑鼠點擊 */
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* 加入回彈特效 */
+            pointer-events: none; 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
             z-index: 10;
         }
 
-        /* 達成時戳章浮現並彈跳縮小 */
         .card.completed .stamp {
             opacity: 0.85;
             transform: rotate(-20deg) scale(1);
         }
 
-        /* 隱藏的 GM 控制按鈕 */
         .gm-btn {
-            display: none; /* 預設完全隱藏 */
+            display: none; 
             margin-top: 15px;
             width: 100%;
             background-color: #27ae60;
@@ -263,25 +274,18 @@
             font-size: 1.1rem;
             cursor: pointer;
             position: relative;
-            z-index: 12; /* 確保在最上層 */
+            z-index: 12; 
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             transition: 0.2s;
         }
 
         .gm-btn:active { background-color: #2ecc71; }
-        
-        /* 若卡片已完成，GM 按鈕變成解除狀態 */
-        .card.completed .gm-btn {
-            background-color: #95a5a6;
-        }
+        .card.completed .gm-btn { background-color: #95a5a6; }
+        body.gm-mode-active .gm-btn { display: block; }
 
-        /* 解鎖 GM 模式時顯示按鈕 */
-        body.gm-mode-active .gm-btn {
-            display: block;
-        }
         /* --- 隱藏的左側選單打勾特效 --- */
         .dungeon-sidebar button.all-completed::after {
-            content: ' ✅'; /* 自動在文字後面加上勾勾 */
+            content: ' ✅'; 
             font-size: 0.9em;
             animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
@@ -290,12 +294,15 @@
             0% { opacity: 0; transform: scale(0); }
             100% { opacity: 1; transform: scale(1); }
         }
+
         /* --- 6. 手機版自動適應 (修復跑版與防卡住優化) --- */
         @media screen and (max-width: 768px) {
+            .top-nav {
+                justify-content: flex-start; /* 🪄 防止選單太長時，最左邊的故事主線被切掉 */
+            }
             .top-nav button { padding: 10px 15px; font-size: 1rem; }
             .dungeon-layout { flex-direction: column; }
             
-            /* 次級選單：橫向滑動，只佔一行高度 */
             .dungeon-sidebar {
                 width: 100%; min-width: 100%; height: auto;
                 flex-direction: row; border-right: none;
@@ -306,12 +313,11 @@
             }
             
             .dungeon-sidebar button {
-                white-space: nowrap; border-left: none;
+                white-space: nowrap !important; border-left: none;
                 border-bottom: 3px solid transparent; padding: 12px 15px;
-                flex-shrink: 0; 
             }
 
-            /* 🪄 新增：在次級選單最後面加一點空氣，讓最後一個選項(QVB)不會黏在邊緣 */
+            /* 🪄 在次級選單最後面加一點空氣，讓最後一個選項絕對不會黏在邊緣 */
             .dungeon-sidebar::after {
                 content: '';
                 flex-shrink: 0;
@@ -322,12 +328,11 @@
                 border-left: none; border-bottom: 3px solid var(--accent-color);
             }
             
-            /* 🪄 終極防卡住優化：在底部加上 80px 的超大留白，絕對不會再被切斷！ */
+            /* 🪄 終極防卡住優化：底部加上超大留白 */
             .dungeon-detail, .tab-content { 
                 padding: 15px 10px 80px 10px; 
             }
             
-            /* 對話框專屬防擁擠優化 */
             .card {
                 padding: 15px 15px;
                 border-radius: 10px;
@@ -336,7 +341,6 @@
             h2 { font-size: 1.4rem; padding-bottom: 8px; }
             h3 { font-size: 1.2rem; }
             
-            /* 縮小手機版印章尺寸，絕對不擋文字 */
             .stamp { top: 10px; right: 10px; font-size: 1.2rem; padding: 3px 8px; border-width: 3px; }
         }
     </style>
