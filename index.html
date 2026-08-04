@@ -71,6 +71,9 @@
             cursor: pointer;
             transition: 0.3s;
             border-bottom: 4px solid transparent;
+            /* 🪄 新增：不准換行、不准縮水 */
+            white-space: nowrap; 
+            flex-shrink: 0;
         }
 
         .top-nav button:hover {
@@ -139,6 +142,9 @@
             color: var(--primary-color);
             cursor: pointer;
             transition: 0.2s;
+            /* 🪄 新增：不准換行、不准縮水 */
+            white-space: nowrap; 
+            flex-shrink: 0;
         }
 
         .dungeon-sidebar button:hover { background-color: #fdfbf7; }
@@ -514,7 +520,7 @@
                 </div>
             </div>
         </div>
-<!-- ================= 勇者試煉 (左右雙欄版) ================= -->
+        <!-- ================= 勇者試煉 (左右雙欄版) ================= -->
         <div id="Trials" class="tab-content main-tab-content">
             <div class="dungeon-layout">
                 <!-- 左側選單 -->
@@ -628,17 +634,17 @@
                 
                 <!-- 副本左側：地點選單 -->
                 <div class="dungeon-sidebar">
-                    <button class="dungeon-link active" onclick="openDungeon(event, 'sub-newtown')">🎨 Newtown</button>
-                    <button class="dungeon-link" onclick="openDungeon(event, 'sub-usyd')">🏰 雪梨大學</button>
-                    <button class="dungeon-link" onclick="openDungeon(event, 'sub-observatory')">🌃 天文台</button>
-                    <button class="dungeon-link" onclick="openDungeon(event, 'sub-unsw')">🌈 UNSW學院</button>
-                    <button class="dungeon-link" onclick="openDungeon(event, 'sub-opera')">🏛 歌劇院</button>
-                    <button class="dungeon-link" onclick="openDungeon(event, 'sub-bluemountain')">🏔 藍山</button>
-                    <button class="dungeon-link" onclick="openDungeon(event, 'sub-zoo')">🦘 動物園</button>
-                    <button class="dungeon-link" onclick="openDungeon(event, 'sub-bondi')">🌊 Bondi海灘</button>
-                    <button class="dungeon-link" onclick="openDungeon(event, 'sub-chinatown')">🏮 Chinatown</button>
-                    <button class="dungeon-link" onclick="openDungeon(event, 'sub-therocks')">🪨 The Rocks</button>
-                    <button class="dungeon-link" onclick="openDungeon(event, 'sub-qvb')">🏰 QVB宮殿</button>
+                    <button class="dungeon-link active" onclick="openDungeon(event, 'sub-newtown')">1. 🎨 Newtown</button>
+                    <button class="dungeon-link" onclick="openDungeon(event, 'sub-usyd')">2. 🏰 雪梨大學</button>
+                    <button class="dungeon-link" onclick="openDungeon(event, 'sub-observatory')">3. 🌃 天文台</button>
+                    <button class="dungeon-link" onclick="openDungeon(event, 'sub-unsw')">4. 🌈 UNSW學院</button>
+                    <button class="dungeon-link" onclick="openDungeon(event, 'sub-opera')">5. 🏛 歌劇院</button>
+                    <button class="dungeon-link" onclick="openDungeon(event, 'sub-bluemountain')">6. 🏔 藍山</button>
+                    <button class="dungeon-link" onclick="openDungeon(event, 'sub-zoo')">7. 🦘 動物園</button>
+                    <button class="dungeon-link" onclick="openDungeon(event, 'sub-bondi')">8. 🌊 Bondi海灘</button>
+                    <button class="dungeon-link" onclick="openDungeon(event, 'sub-chinatown')">9. 🏮 Chinatown</button>
+                    <button class="dungeon-link" onclick="openDungeon(event, 'sub-therocks')">10. 🪨 The Rocks</button>
+                    <button class="dungeon-link" onclick="openDungeon(event, 'sub-qvb')">11. 🏰 QVB宮殿</button>
                 </div>
 
                 <!-- 副本右側：切換的內容視窗 -->
