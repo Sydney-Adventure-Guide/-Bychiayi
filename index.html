@@ -21,7 +21,7 @@
             display: flex;
             flex-direction: column;
             height: 100vh;  /* 給舊手機的備用 */
-            height: 100dvh; /* 🪄 魔法指令：自動扣除 LINE 或手機底部的導覽列 */
+            height: 100dvh; /* 🪄 就是少了這一行！自動扣除 LINE 底部的導覽列 */
             background-color: var(--bg-color);
             color: var(--text-color);
             line-height: 1.6;
@@ -348,10 +348,12 @@
         </div>
         <div class="top-nav">
             <button class="main-tab-link active" onclick="openMainTab(event, 'Story', 'block')">📖 故事主線</button>
-            <button class="main-tab-link" onclick="openMainTab(event, 'Explore', 'block')">🔍 探索任務</button>
-            <button class="main-tab-link" onclick="openMainTab(event, 'Trials', 'block')">⚔️ 勇者試煉</button>
-            <!-- 點擊副本時，顯示模式改為 flex 以支援左右排版 -->
+
+            <!-- 點擊時，顯示模式改為 flex 以支援左右排版 -->
+            <button class="main-tab-link" onclick="openMainTab(event, 'Explore', 'flex')">🔍 探索任務</button>
+            <button class="main-tab-link" onclick="openMainTab(event, 'Trials', 'flex')">⚔️ 勇者試煉</button>
             <button class="main-tab-link" onclick="openMainTab(event, 'Dungeons', 'flex')">🏰 王國副本</button>
+            
             <button class="main-tab-link" onclick="openMainTab(event, 'Ceremony', 'block')">🌟 祈願儀式</button>
         </div>
     </div>
