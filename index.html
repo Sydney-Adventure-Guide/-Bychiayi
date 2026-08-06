@@ -422,7 +422,7 @@
         <div id="Story" class="tab-content main-tab-content" style="display: block;">
             <div class="content-inner">
                 <h2>故事主線</h2>
-                <div class="card">
+                <div class="card no-stamp">
                     <p>很久很久以前，有一位來自遠方王國的公主——Jasmine均 。</p>
                     <p>為了尋找世界上最珍貴的寶藏，她來到了遙遠的雪梨王國。</p>
                     <p>傳說雪梨王國藏著「幸福星星」，每一顆星星都代表一次笑聲、一段回憶、一個值得收藏的瞬間。</p>
@@ -433,6 +433,9 @@
                     🛡️ 皇家騎士 Danny<br>
                     🤴 王子殿下 Mark</p>
                     <p>他們將陪伴宜昂Jasmine 均公主探索雪梨王國，完成任務，收集星星，找到屬於自己的幸福寶藏。</p>
+                    
+                    <!--毀滅按鈕-->
+                    <button class="gm-btn" style="background-color: #c0392b; margin-top: 30px;" onclick="resetQuest()">⚠️ GM 專用：消除所有記憶 (重置進度)</button>
                 </div>
             </div>
         </div>
@@ -818,7 +821,7 @@
 
                     <div id="sub-qvb" class="dungeon-pane">
                         <h2>🏰 Queen Victoria Building 水晶宮殿</h2>
-                        <div class="card">
+                        <div class="card no-stamp">
                             <p>雪梨王國最華麗的宮殿，擁有彩繪玻璃、巨大時鐘、優雅走廊。<br>據說，每一位真正的公主，都一定會來到這裡。<br>因為，只有走進宮殿，冒險才算真正開始。</p>
                         </div>
                         <!-- 任務卡片 1 -->
@@ -854,7 +857,7 @@
                 因此，在王國最重要的十個地方，都藏著一座「願望祭壇」。<br>
                 當公主來到祭壇前，只要真心許下一個願望，星星便會開始閃耀。</p>
 
-                <div class="card">
+                <div class="card no-stamp">
                     <h3>🌟 祈願儀式規則</h3>
                     <p>當抵達指定地點時，Jasmine 均公主必須：<br>
                     ✨ 閉上眼睛<br>
@@ -867,18 +870,61 @@
                     因為有些願望，需要一點時間慢慢長大。</p>
                 </div>
 
+                <!-- 標題卡片：加上 no-stamp 讓它不顯示蓋章按鈕 -->
+                <div class="card no-stamp">
+                    <h3>🗺️ 願望祭壇地點</h3>
+                    <p>請前往以下十個神聖的地點，尋找願望祭壇並完成專屬的祈願儀式吧！</p>
+                </div>
+
+                <!-- 以下是 10 個獨立的祭壇任務小卡 -->
                 <div class="card">
-                    <h3>願望祭壇地點</h3>
-                    <p>1. 大教堂<br>
-                    2. 賣卡夫人石椅<br>
-                    3. 歌劇院<br>
-                    4. QVB<br>
-                    5. bondi 海灘<br>
-                    6. UNSW大學<br>
-                    7. 雪梨大學<br>
-                    8. 天文台<br>
-                    9. 指定酒吧<br>
-                    10. 神秘地點</p>
+                    <h3>1. 大教堂</h3>
+                    <div class="task-req">* 在大教堂完成祈願儀式 </div>
+                </div>
+                
+                <div class="card">
+                    <h3>2. 賣卡夫人石椅</h3>
+                    <div class="task-req">* 在賣卡夫人石椅完成祈願儀式 </div>
+                </div>
+                
+                <div class="card">
+                    <h3>3. 歌劇院</h3>
+                    <div class="task-req">* 在歌劇院完成祈願儀式 </div>
+                </div>
+                
+                <div class="card">
+                    <h3>4. QVB</h3>
+                    <div class="task-req">* 在 QVB 完成祈願儀式 </div>
+                </div>
+                
+                <div class="card">
+                    <h3>5. bondi 海灘</h3>
+                    <div class="task-req">* 在 bondi 海灘完成祈願儀式 </div>
+                </div>
+                
+                <div class="card">
+                    <h3>6. UNSW大學</h3>
+                    <div class="task-req">* 在 UNSW大學完成祈願儀式 </div>
+                </div>
+                
+                <div class="card">
+                    <h3>7. 雪梨大學</h3>
+                    <div class="task-req">* 在雪梨大學完成祈願儀式 </div>
+                </div>
+                
+                <div class="card">
+                    <h3>8. 天文台</h3>
+                    <div class="task-req">* 在天文台完成祈願儀式 </div>
+                </div>
+                
+                <div class="card">
+                    <h3>9. 指定酒吧</h3>
+                    <div class="task-req">* 在指定酒吧完成祈願儀式 </div>
+                </div>
+                
+                <div class="card">
+                    <h3>10. 神秘地點</h3>
+                    <div class="task-req">* 在最終神秘地點完成祈願儀式 </div>
                 </div>
             </div>
         </div>
@@ -991,6 +1037,11 @@
             const cards = document.querySelectorAll('.card');
             
             cards.forEach((card, index) => {
+                // 🪄 新增魔法：如果這張卡片有 'no-stamp' 通行證，就直接跳過，不加印章！
+                if (card.classList.contains('no-stamp')) {
+                    return; 
+                }
+
                 const taskId = 'quest-card-' + index;
                 card.setAttribute('id', taskId);
     
@@ -1008,10 +1059,9 @@
                     if (card.classList.contains('completed')) {
                         gmBtn.innerHTML = '↩️ 復原戳章';
                         
-                        // 🪄 觸發隱藏信封魔法 (5000毫秒 = 5秒後)
+                        // 觸發隱藏信封魔法 (5000毫秒 = 5秒後)
                         if (card.classList.contains('magic-trigger-card')) {
                             setTimeout(() => {
-                                // 檢查是否已經解鎖過，避免重複跳出
                                 if (localStorage.getItem('sydneyQuestUniqueUnlocked') !== 'true') {
                                     document.getElementById('envelope-modal').style.display = 'flex';
                                 }
@@ -1111,6 +1161,20 @@
                 document.getElementById('unique-tab-btn').style.display = 'inline-block';
             }
         });
+        
+        // --- GM 消除記憶魔法 (重置所有進度) ---
+        function resetQuest() {
+            if(confirm('⚠️ 確定要消除公主的所有冒險記憶，讓一切重新開始嗎？')) {
+                // 清除任務蓋章紀錄
+                localStorage.removeItem('sydneyQuestProgress');
+                // 清除隱藏信封解鎖紀錄
+                localStorage.removeItem('sydneyQuestUniqueUnlocked');
+                
+                // 重新載入網頁
+                alert('✨ 記憶已消除，網頁即將重新載入！');
+                location.reload(); 
+            }
+        }
     </script>
 
 </body>
