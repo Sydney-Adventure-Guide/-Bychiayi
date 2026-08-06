@@ -343,6 +343,51 @@
             
             .stamp { top: 10px; right: 10px; font-size: 1.2rem; padding: 3px 8px; border-width: 3px; }
         }
+        /* --- 7. 神秘信封與隱藏任務特效 --- */
+        .envelope-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
+            background: rgba(0,0,0,0.85); z-index: 9999; display: none; /* 預設隱藏 */
+            justify-content: center; align-items: center;
+        }
+        
+        .envelope-cover {
+            background: linear-gradient(135deg, #e67e22, #d35400);
+            width: 250px; height: 160px; border-radius: 10px;
+            display: flex; justify-content: center; align-items: center;
+            color: white; font-size: 1.2rem; font-weight: bold;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            cursor: pointer; position: relative;
+            animation: floatMsg 2s ease-in-out infinite;
+        }
+        .envelope-cover::after { content: '✉️ 點擊開啟神秘信件'; }
+        
+        .letter-paper {
+            background: #fffdf5; padding: 25px 20px; border-radius: 8px;
+            width: 85%; max-width: 500px; max-height: 80dvh;
+            overflow-y: auto; display: none; /* 點擊後才顯示 */
+            box-shadow: 0 0 20px rgba(243, 156, 18, 0.5);
+            color: #5d4037; border: 1px solid #f3cc90;
+            animation: paperOpen 0.6s forwards;
+        }
+        
+        .letter-title { color: #d35400; border-bottom: 2px dashed #e67e22; padding-bottom: 10px; font-size: 1.3rem; margin-top:0;}
+        .letter-body { line-height: 1.8; font-size: 1.05rem; }
+        
+        .accept-btn {
+            margin-top: 15px; width: 100%; background: #27ae60; color: white;
+            border: none; padding: 12px; font-size: 1.2rem; border-radius: 8px;
+            cursor: pointer; font-weight: bold; transition: 0.3s;
+        }
+        .accept-btn:active { background: #2ecc71; }
+        
+        @keyframes floatMsg {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        @keyframes paperOpen {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
     </style>
 
 
@@ -365,6 +410,8 @@
             <button class="main-tab-link" onclick="openMainTab(event, 'Dungeons', 'flex')">🏰 王國副本</button>
             
             <button class="main-tab-link" onclick="openMainTab(event, 'Ceremony', 'block')">🌟 祈願儀式</button>
+            <!-- 👇 新增這個隱藏的獨特任務按鈕 👇 -->
+            <button id="unique-tab-btn" class="main-tab-link" onclick="openMainTab(event, 'UniqueTask', 'block')" style="display: none; color: #e74c3c;">🎁 獨特任務</button>
         </div>
     </div>
 
@@ -773,17 +820,23 @@
                         <h2>🏰 Queen Victoria Building 水晶宮殿</h2>
                         <div class="card">
                             <p>雪梨王國最華麗的宮殿，擁有彩繪玻璃、巨大時鐘、優雅走廊。<br>據說，每一位真正的公主，都一定會來到這裡。<br>因為，只有走進宮殿，冒險才算真正開始。</p>
+                        </div>
+                        <!-- 任務卡片 1 -->
+                        <div class="card magic-trigger-card">  
                             <p><strong>1. 公主留影</strong><br>陽光穿過彩繪玻璃，灑落在宮殿中央。<br>請在最美的地方，留下屬於公主的照片。<br>
                             <span class="task-req">* 跟漂亮的雕花玻璃拍照 🌟🌟</span></p>
                         </div>
+                        <!-- 任務卡片 2 -->
                         <div class="card">
                             <p><strong>2. 巧克力寶藏</strong><br>宮殿裡，藏著一間充滿幸福香氣的魔法巧克力店。<br>據說，找到它的人，接下來的旅程都會甜甜的。<br>
                             <span class="task-req">* 找到 Koko Black 🌟🌟</span></p>
                         </div>
+                        <!-- 任務卡片 3 -->
                         <div class="card">
                             <p><strong>3. 幸福收藏家</strong><br>一路走來，公主一定收集了很多回憶。<br>也許是一句很好笑的話，一張照片，一個擁抱，或者是一件微不足道的小事。<br>今晚，請大家一起分享：今天最幸福的一個瞬間。<br>因為真正的寶藏，從來不是買到的東西，而是那些一起經歷的時光。<br>
                             <span class="task-req">* 從現在開始搜集開心的瞬間，晚上在酒吧分享 🌟🌟🌟</span></p>
                         </div>
+                        
                     </div>
 
                 </div>
@@ -831,7 +884,41 @@
         </div>
 
     </div>
+    <!-- ================= 獨特任務 (隱藏彩蛋) ================= -->
+        <div id="UniqueTask" class="tab-content main-tab-content">
+            <div class="content-inner">
+                <h2>🎁 傳說工匠的考驗</h2>
+                <div class="card">
+                    <p>信件的最後，工匠留下了一個神秘的座標。<br>請前往工坊，尋找那件命中注定的傳說裝備。</p>
+                    <p>不用急著尋找最漂亮的，請相信第一眼的心動。<br>因為當妳遇見它時，它也正在等待妳。</p>
+                    <h3 style="color:#d35400;">4️⃣ 傳說裝備的選擇</h3>
+                    <p>找到裝備後，請由 Mark 王子親手為 Jasmine 公主戴上，象徵守護與祝福的約定。</p>
+                    <div class="task-req">* 獲得專屬傳說裝備，並由 Mark 王子戴上 🌟🌟🌟🌟🌟</div>
+                </div>
+            </div>
+        </div>
 
+    </div> <!-- 這是 main-content 的結尾 -->
+
+    <!-- ================= 神秘信封動畫區 ================= -->
+    <div id="envelope-modal" class="envelope-modal">
+        <!-- 信封外觀 -->
+        <div id="envelope-cover" class="envelope-cover" onclick="openEnvelope()"></div>
+        <!-- 信紙內容 -->
+        <div id="letter-content" class="letter-paper">
+            <h3 class="letter-title">4️⃣ 傳說工匠的邀請函 🌟🌟🌟🌟🌟</h3>
+            <div class="letter-body">
+                <p>就在 Jasmine 公主漫步於水晶宮殿時，<br>一封神秘的信件，悄悄出現在眼前。<br>信件來自雪梨王國最神秘的傳說工匠。<br>打開信封，裡面寫著：</p>
+                <p>📜 親愛的 Jasmine 公主：<br><br>歡迎來到雪梨王國。<br>我已經等妳很久了。<br>傳說中，每一位來到雪梨王國的公主，都會在旅程開始時，收到屬於自己的祝福。<br>而妳，也不例外。</p>
+                <p>每一件傳說裝備，都在等待真正屬於它的主人。<br>今天，請帶著三位守護者，一同來到我的工坊。<br>不用急著尋找最漂亮的寶物，也不用刻意做出選擇。<br>請相信自己的第一眼。<br>因為，當妳遇見那件命中注定的寶物時，它也正在等待妳。</p>
+                <p>找到它之後，請由 <strong>Mark 王子</strong> 親手為妳戴上。<br>願這件傳說裝備，陪伴妳完成雪梨王國接下來的每一段冒險，也收藏一路上的笑容、回憶與幸福。</p>
+                <p>期待與妳相見。<br><br>—— 傳說工匠 敬上</p>
+            </div>
+            <button class="accept-btn" onclick="acceptUniqueTask()">✨ 獲取獨特任務</button>
+        </div>
+    </div>
+
+    
     <script>
     // 1. 最上方主目錄切換
         function openMainTab(evt, tabId, displayStyle) {
@@ -920,11 +1007,22 @@
                     card.classList.toggle('completed');
                     if (card.classList.contains('completed')) {
                         gmBtn.innerHTML = '↩️ 復原戳章';
+                        
+                        // 🪄 觸發隱藏信封魔法 (5000毫秒 = 5秒後)
+                        if (card.classList.contains('magic-trigger-card')) {
+                            setTimeout(() => {
+                                // 檢查是否已經解鎖過，避免重複跳出
+                                if (localStorage.getItem('sydneyQuestUniqueUnlocked') !== 'true') {
+                                    document.getElementById('envelope-modal').style.display = 'flex';
+                                }
+                            }, 5000);
+                        }
+                        
                     } else {
                         gmBtn.innerHTML = '✅ 蓋章認證';
                     }
                     saveProgress();
-                    checkAllProgress(); // 蓋完章檢查是否通關
+                    checkAllProgress(); 
                 };
                 card.appendChild(gmBtn);
             });
@@ -986,6 +1084,33 @@
             checkLinks('.explore-link'); // 檢查探索任務
             checkLinks('.trial-link');   // 檢查勇者試煉
         }
+    // --- 信封與隱藏任務功能 ---
+        function openEnvelope() {
+            document.getElementById('envelope-cover').style.display = 'none';
+            document.getElementById('letter-content').style.display = 'block';
+        }
+        
+        function acceptUniqueTask() {
+            // 關閉信封
+            document.getElementById('envelope-modal').style.display = 'none';
+            
+            // 顯示獨特任務按鈕
+            const uniqueBtn = document.getElementById('unique-tab-btn');
+            uniqueBtn.style.display = 'inline-block';
+            
+            // 永久記憶解鎖狀態
+            localStorage.setItem('sydneyQuestUniqueUnlocked', 'true');
+            
+            // 自動幫公主點擊切換到最新獲得的任務！
+            uniqueBtn.click();
+        }
+
+        // 讀取進度時，檢查是否已經解鎖過獨特任務
+        document.addEventListener("DOMContentLoaded", () => {
+            if (localStorage.getItem('sydneyQuestUniqueUnlocked') === 'true') {
+                document.getElementById('unique-tab-btn').style.display = 'inline-block';
+            }
+        });
     </script>
 
 </body>
