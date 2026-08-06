@@ -298,7 +298,7 @@
         /* --- 6. 手機版自動適應 (修復跑版與防卡住優化) --- */
         @media screen and (max-width: 768px) {
             .top-nav {
-                justify-content: flex-start; /* 🪄 防止選單太長時，最左邊的故事主線被切掉 */
+                justify-content: flex-start;
             }
             .top-nav button { padding: 10px 15px; font-size: 1rem; }
             .dungeon-layout { flex-direction: column; }
@@ -310,6 +310,8 @@
                 box-shadow: 0 2px 5px rgba(0,0,0,0.03);
                 overflow-x: auto; 
                 flex-wrap: nowrap;
+                /* 🪄 防壓扁魔法：警告瀏覽器，這排選單絕對不准縮水！ */
+                flex-shrink: 0; 
             }
             
             .dungeon-sidebar button {
@@ -317,18 +319,18 @@
                 border-bottom: 3px solid transparent; padding: 12px 15px;
             }
 
-            /* 🪄 在次級選單最後面加一點空氣，讓最後一個選項絕對不會黏在邊緣 */
-            .dungeon-sidebar::after {
+            /* 🪄 隱形空氣牆：在兩排選單的最尾巴，加上 80px 的超大留白空間。
+                 這樣即使你滑到最後面，按鈕也會閃過那個灰色的懸浮按鈕，讓你輕鬆點擊！ */
+            .top-nav::after, .dungeon-sidebar::after {
                 content: '';
                 flex-shrink: 0;
-                width: 15px;
+                width: 80px;
             }
             
             .dungeon-sidebar button.active {
                 border-left: none; border-bottom: 3px solid var(--accent-color);
             }
             
-            /* 🪄 終極防卡住優化：底部加上超大留白 */
             .dungeon-detail, .tab-content { 
                 padding: 15px 10px 80px 10px; 
             }
